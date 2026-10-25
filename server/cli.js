@@ -128,10 +128,8 @@ async function main() {
         break;
       }
       case 'set-password': {
-        // Password login website (email + password) untuk akun mana pun, termasuk DEVELOPER pertama.
+        // Password login website (username/email + password) untuk akun mana pun, termasuk DEVELOPER pertama.
         const a = await findAccount(db, o.username);
-        const row = (await db.query('SELECT email FROM accounts WHERE id = $1', [a.id]))[0];
-        if (!row.email) fail(`Akun ${a.username} belum punya email. Login website memakai email + password.`);
         const p1 = await askHidden('Password baru: ');
         const p2 = await askHidden('Ulangi password: ');
         if (p1 !== p2) fail('Password tidak sama.');
@@ -141,7 +139,7 @@ async function main() {
           const n = (await tx.query('UPDATE dashboard_sessions SET revoked_at = now() WHERE account_id = $1 AND revoked_at IS NULL RETURNING id', [a.id])).length;
           await audit.write(tx, { actorType: 'cli', action: 'account.password.reset', targetType: 'account', targetId: a.id, details: { via: 'cli', revoked_sessions: n } });
         });
-        console.log(`✔ Password website ${a.username} diatur. Login: ${cfg.publicUrl} dengan ${row.email}`);
+        console.log(`✔ Password website ${a.username} diatur. Login: ${cfg.publicUrl} dengan username ${a.username}`);
         break;
       }
       case 'list-bots': {

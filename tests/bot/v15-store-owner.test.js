@@ -71,8 +71,8 @@ test('order premium manual: buyprem -> acctrx mengaktifkan premium', async () =>
   await s.send({ text: '.buyprem 7', from: USER });
   const order = s.db.raw().orders[0];
   assert.equal(order.status, 'pending');
-  assert.equal(order.amount, Number(require('../../settingsbot.js').harga.prem) * 7);
-  assert.ok(s.sent.some(x => x.jid === `${require('../../settingsbot.js').owner.number}@s.whatsapp.net` && /Order baru/.test(x.content.text)), 'owner diberi tahu');
+  assert.equal(order.amount, Number(require('../../settings.js').harga.prem) * 7);
+  assert.ok(s.sent.some(x => x.jid === `${require('../../settings.js').owner.number}@s.whatsapp.net` && /Order baru/.test(x.content.text)), 'owner diberi tahu');
   assert.match(await s.send({ text: `.acctrx ${order.id}` }), /dikonfirmasi/);
   assert.ok(s.db.isPremium(USER));
   assert.match(await s.send({ text: `.acctrx ${order.id}` }), /sudah diproses/);

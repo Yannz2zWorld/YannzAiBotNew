@@ -1,5 +1,5 @@
 'use strict';
-// Memuat .env (kalau ada), lalu settingsbot.js, lalu memvalidasi isinya.
+// Memuat .env (kalau ada), lalu settings.js, lalu memvalidasi isinya.
 // Error validasi tidak pernah mencetak nilai secret — hanya nama field-nya.
 
 const fs = require('fs');
@@ -40,7 +40,7 @@ const isLocalUrl = v => { try { const h = new URL(v).hostname; return h === 'loc
 function validate(cfg) {
   const p = [];
   const need = (cond, msg) => { if (!cond) p.push(msg); };
-  need(isObj(cfg), 'settingsbot.js harus mengekspor object');
+  need(isObj(cfg), 'settings.js harus mengekspor object');
   if (!isObj(cfg)) throw new ConfigError(p);
 
   need(isObj(cfg.bot) && typeof cfg.bot.name === 'string' && cfg.bot.name.trim(), 'bot.name wajib diisi');
@@ -93,10 +93,39 @@ let cached = null;
 function loadConfig({ reload = false, envFile } = {}) {
   if (cached && !reload) return cached;
   loadDotEnv(envFile);
-  const file = require.resolve(path.join(ROOT, 'settingsbot.js'));
+  const file = require.resolve(path.join(ROOT, 'settings.js'));
   if (reload) delete require.cache[file];
   cached = validate(require(file));
   return cached;
 }
 
-module.exports = { loadConfig, validate, redact, loadDotEnv, ConfigError, ROOT, SECRET_KEY };
+// Shim kompatibilitas: plugin lama base/V15 membaca global.owner, global.mess, global.botname, dst.
+// Hanya nilai NON-RAHASIA yang dipetakan ke global; API key tidak pernah diekspos.
+function applyLegacyGlobals(cfg = loadConfig()) {
+  Object.assign(global, {
+    owner: cfg.owner.number,
+    owners: cfg.owner.extra,
+    namaOwner: cfg.owner.name,
+    versi: cfg.bot.version,
+    botname: cfg.bot.name,
+    botname2: cfg.bot.name2,
+    packname: cfg.bot.packname,
+    author: cfg.bot.author,
+    linkOwner: cfg.links.owner,
+    linkGrup: cfg.links.group,
+    linkSaluran: cfg.links.channel,
+    idSaluran: cfg.links.channelId,
+    namaSaluran: cfg.links.channelName,
+    image: { ...cfg.image },
+    mess: { ...cfg.mess },
+    limitHarian: cfg.limit.daily,
+    warnGrup: cfg.limit.warnBeforeKick,
+    harga: { ...cfg.harga },
+    sewa: { ...cfg.sewa },
+    delayJpm: cfg.delay.jpm,
+    tempatDB: cfg.database.file
+  });
+  return cfg;
+}
+
+module.exports = { applyLegacyGlobals, loadConfig, validate, redact, loadDotEnv, ConfigError, ROOT, SECRET_KEY };

@@ -2,7 +2,7 @@
 
 Bot WhatsApp modular dengan namespace `yannajah`, autentikasi bot ke **backend pusat** (nomor bot + password bot), **website dashboard** dengan login username/email + password (Google opsional), **5 rank website** (RESELLER, SUKI, KING, CEO, DEVELOPER) dengan kuota nomor 10/50/100/1000/∞, ban/unban & maintenance yang tersinkron ke proses bot, serta integrasi **APIZ2Z** dari katalog endpoint yang terverifikasi. MEMBER bukan akun website — ia hanya pemakai bot yang nomornya didaftarkan reseller ke atas.
 
-Struktur file mengikuti base bot (referensi kedua); fitur & perilaku mengikuti Yann AI V15 Fixed. Detail audit: [docs/AUDIT.md](docs/AUDIT.md).
+Struktur file mengikuti Yann AI V15 / Lena AI (1 file = 1 command); fitur & perilaku mengikuti Yann AI V15 Fixed. Detail audit: [docs/AUDIT.md](docs/AUDIT.md).
 
 | Dokumen | Isi |
 |---|---|
@@ -75,9 +75,9 @@ Urutan: banner **YANNZAJAH** → validasi konfigurasi → login ke server lisens
 
 Pairing code memakai `sock.requestPairingCode(nomor, kode8)` dan QR memakai event `connection.update` — keduanya diverifikasi ada di `@whiskeysockets/baileys@7.0.0-rc14` yang terpasang. Tautkan di WhatsApp: *Perangkat tertaut → Tautkan perangkat* (QR) atau *Tautkan dengan nomor telepon* (kode). QR/kode hanya tampil di terminal, tidak ditulis ke log.
 
-## `settingsbot.js` & environment
+## `settings.js` & environment
 
-`settingsbot.js` berisi konfigurasi non-rahasia (dikelompokkan: bot, owner, prefix, chat, logger, pairing, license, database, api, plugin, media, limit, permission, cache, concurrency, retry, timeout, dashboard, harga/sewa, links, image, mess) dengan nilai yang diambil dari settings Yann AI V15. Semua secret (API key, password DB, OAuth secret, session secret, backup key) **hanya** dari environment — lihat [.env.example](.env.example). Konfigurasi divalidasi saat start; error tidak mencetak nilai secret.
+`settings.js` berisi konfigurasi non-rahasia (dikelompokkan: bot, owner, prefix, chat, logger, pairing, license, database, api, plugin, media, limit, permission, cache, concurrency, retry, timeout, dashboard, harga/sewa, links, image, mess) dengan nilai yang diambil dari settings Yann AI V15. Semua secret (API key, password DB, OAuth secret, session secret, backup key) **hanya** dari environment — lihat [.env.example](.env.example). Konfigurasi divalidasi saat start; error tidak mencetak nilai secret.
 
 ## Namespace `yannajah`
 
@@ -128,12 +128,12 @@ npm run build:dist -- --license-url https://lisensi.domainkamu.com   # dist/Yann
 ```
 Cara kerjanya sama seperti bot referensi: password bot disimpan di database website, bot hasil build menyambung ke website itu, dan alamatnya tertanam di kode yang diobfuscate.
 
-- `--license-url` menanam alamat website lisensi di `library/license-endpoint.js` (string dikodekan penuh). Bot hasil build **selalu** login ke website itu; `LICENSE_SERVER_URL` di `.env` dan `settingsbot.js` tidak bisa mengarahkannya ke server lain.
+- `--license-url` menanam alamat website lisensi di `library/license-endpoint.js` (string dikodekan penuh). Bot hasil build **selalu** login ke website itu; `LICENSE_SERVER_URL` di `.env` dan `settings.js` tidak bisa mengarahkannya ke server lain.
 - Pembeli/pemakai cukup menjalankan bot lalu memasukkan **nomor bot + password bot** yang Anda buat di dashboard. Tambah/hapus nomor, ganti password, ban, dan maintenance diatur dari website.
 - Yang ditanam hanya **alamat website**, bukan URL/password database. Database hanya bisa diakses server website, jadi file bot yang bocor tidak bisa membaca atau mengubah database.
 - Tanpa `--license-url`, dist memakai `LICENSE_SERVER_URL` dari `.env` (untuk tes).
 
-Kode inti bot diobfuscate (`javascript-obfuscator`) sebagai lapisan tambahan: membuat kode sulit dibaca, tapi tidak mustahil direkayasa balik. Keamanan sesungguhnya ada di server (password bcrypt, sesi bisa dicabut, ban dari dashboard). `settingsbot.js`, katalog, dataset, dan migrasi tidak diobfuscate. Build diuji otomatis (dimuat & dijalankan dari folder dist).
+Kode inti bot diobfuscate (`javascript-obfuscator`) sebagai lapisan tambahan: membuat kode sulit dibaca, tapi tidak mustahil direkayasa balik. Keamanan sesungguhnya ada di server (password bcrypt, sesi bisa dicabut, ban dari dashboard). `settings.js`, katalog, dataset, dan migrasi tidak diobfuscate. Build diuji otomatis (dimuat & dijalankan dari folder dist).
 
 ## Backup, restore, pencabutan akses, troubleshooting
 
@@ -141,22 +141,30 @@ Lihat [docs/DATABASE.md](docs/DATABASE.md#backup--restore) dan [docs/DEPLOYMENT.
 
 ## Struktur direktori
 
+Mengikuti struktur Yann AI V15 / Lena AI (kode ditulis ulang & dirapikan, alur sama):
+
 ```
-YannAjahNew/
-├── index.js            entry bot (banner, lisensi, pairing, event)
-├── settingsbot.js      konfigurasi bot (non-rahasia)
-├── settings.js         shim global untuk plugin lama
-├── yannajah.js         namespace yannajah + facade database bot
-├── command.js          router command
-├── menu.js             menu dari registry
-├── myfunct/            message.js (serializer), handler.js (welcome/left)
-├── source/database.js  database JSON lokal (atomik)
-├── library/            config, logger, net (anti-SSRF), apiz2z, license, connection, registry, media, …
+YannzAiBotNew/
+├── index.js            entry bot: banner, lisensi, database, plugin, koneksi WhatsApp
+├── handler.js          event WhatsApp: pesan masuk & welcome/left grup
+├── YannzAjah-cmd.js    router command (urutan cek: lisensi, maintenance, izin, limit, cooldown, …)
+├── settings.js         konfigurasi bot (non-rahasia; secret dari .env)
+├── source/
+│   ├── message.js      serializer pesan (objek `m`, LID → nomor)
+│   ├── menu-yannai.js  menu dibangun dari registry fitur
+│   └── database.js     database JSON lokal (atomik + .bak)
+├── lib/                logika bersama fitur: game.js, tebak.js, economy.js, welcome.js, store.js, …
+├── library/            inti: yannajah.js (namespace), config-loader, connection, license, registry,
+│   │                   converter.js (ffmpeg), exif.js (stiker), function.js, net, apiz2z, logger, …
 │   └── catalog/        apiz2z-endpoints.json, v15-backlog.json
-├── plugins/            fitur per kategori (+ apiz2z/, backlog/)
+├── plugins/<kategori>/<command>.js   1 file = 1 command (mis. plugins/game/tebakkata.js, plugins/owner/self.js)
+│   ├── apiz2z/         484 command APIZ2Z, dibuat otomatis dari katalog
+│   └── backlog/        daftar command V15 yang belum/tidak dibuat
 ├── data/               dataset V15 (game, islami, gambar)
 ├── server/             backend pusat + dashboard (migrations, lib, services, routes, public, cli.js)
 ├── tests/              server/ (Postgres) & bot/
 ├── tools/              sync katalog, laporan fitur, syntax check, build dist
 └── docs/
 ```
+
+Alur pesan: `index.js` → `handler.js` → `source/message.js` → `YannzAjah-cmd.js` → `plugins/<kategori>/<command>.js` (logika bersama di `lib/`).

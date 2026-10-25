@@ -137,7 +137,7 @@ it('health check berfungsi', async () => {
 
 it('konfigurasi: error validasi & redaksi tidak membocorkan nilai secret', () => {
   const { validate, redact } = require('../../library/config-loader');
-  const cfg = require('../../settingsbot.js');
+  const cfg = require('../../settings.js');
   const copy = JSON.parse(JSON.stringify(cfg));
   copy.api.apiz2z.apiKey = 'sk-super-rahasia-123';
   copy.license.serverUrl = 'http://contoh-produksi.example';   // http non-localhost ditolak

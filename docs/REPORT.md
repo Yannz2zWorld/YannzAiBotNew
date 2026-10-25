@@ -52,7 +52,7 @@ Semua angka di bawah berasal dari run nyata di container pengembangan (Node 22.2
 
 - Proyek berdiri sendiri di repo `YannzAiBotNew` (dulu dikembangkan di folder `api-docs/YannAjahNew`; platform APIZ2Z **tidak diubah**).
 - Migrasi: `server/migrations/001_core.sql`, `server/migrations/002_ranks_permissions.sql`.
-- Kode: `index.js`, `settingsbot.js`, `settings.js`, `yannajah.js`, `command.js`, `menu.js`, `myfunct/*`, `source/database.js`, `library/*` (config-loader, logger, errors, function, net, apiz2z, apiz2z-render, license, connection, registry, plugin-kit, media, mathexpr, games, banner), `plugins/**` (22 file fitur + generator APIZ2Z + backlog V15), `server/**` (app, index, cli, config, lib, services, routes, public), `tools/*`, `tests/**`, `data/**`, `docs/**`, `.env.example`.
+- Kode (struktur seperti Yann AI V15): `index.js`, `handler.js`, `YannzAjah-cmd.js`, `settings.js`, `source/*` (message, menu-yannai, database), `lib/*` (logika bersama fitur), `library/*` (yannajah, config-loader, logger, errors, function, net, apiz2z, apiz2z-render, license, connection, registry, plugin-kit, converter, exif, mathexpr, banner), `plugins/<kategori>/<command>.js` (611 file, 1 file = 1 command + generator APIZ2Z + backlog V15), `server/**` (app, index, cli, config, lib, services, routes, public), `tools/*`, `tests/**`, `data/**`, `docs/**`, `.env.example`.
 
 ## Risiko / catatan terbuka
 

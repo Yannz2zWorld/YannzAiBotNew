@@ -10,7 +10,7 @@ const A = '6281211110001@s.whatsapp.net';
 const B = '6281211110002@s.whatsapp.net';
 const C = '6281211110003@s.whatsapp.net';
 const parts = [A, B, C].map(id => ({ id, phoneNumber: id, admin: null }));
-const tick = (s, now) => scheduler.runOnce({ database: s.db, socket: s.socket, sendmessage: async (jid, content) => s.sent.push({ jid, content }), auth: { isActive: () => true } }, now, require('../../settingsbot.js'));
+const tick = (s, now) => scheduler.runOnce({ database: s.db, socket: s.socket, sendmessage: async (jid, content) => s.sent.push({ jid, content }), auth: { isActive: () => true } }, now, require('../../settings.js'));
 
 test('total chat, sider (data belum cukup = tidak kick), auto level', async () => {
   const s = createScenario();

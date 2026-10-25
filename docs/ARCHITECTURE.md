@@ -14,8 +14,8 @@
   ┌──────────────────────────────────── proses bot (satu proses = satu nomor WhatsApp) ───────────────────────────┐
   │ index.js ── library/license.js (yannajah.auth) ── fail-closed, token 0600, lease instance                       │
   │    │        library/connection.js (Baileys 7: QR / pairing code, lock session, reconnect terkendali)            │
-  │    │        myfunct/message.js (serializer, LID→nomor) → command.js (router) → plugins/** (feature registry)    │
-  │    │        yannajah.js (namespace + facade database lokal) ── source/database.js (JSON atomik)                │
+  │    │        handler.js → source/message.js (serializer) → YannzAjah-cmd.js (router) → plugins/<kat>/<cmd>.js │
+  │    │        library/yannajah.js (namespace + facade database lokal) ── source/database.js (JSON atomik)        │
   │    └──────  library/apiz2z.js (yannajah.api) ──HTTPS(Bearer)──▶ apiz2z.web.id (hanya endpoint terverifikasi)   │
   └────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -24,28 +24,28 @@
 
 | Lapisan | File |
 |---|---|
-| Konfigurasi | `settingsbot.js`, `library/config-loader.js`, `server/config.js` |
+| Konfigurasi | `settings.js`, `library/config-loader.js`, `server/config.js` |
 | Core engine & koneksi WhatsApp | `index.js`, `library/connection.js` |
 | Autentikasi & pairing | `library/license.js` (bot), `server/services/botAuthService.js`, `server/routes/auth.js` |
-| Router command, event | `command.js`, `myfunct/message.js`, `myfunct/handler.js` |
-| Plugin manager & feature registry | `library/registry.js`, `library/plugin-kit.js`, `plugins/**` |
-| Database adapter | `yannajah.js` (facade), `source/database.js`; pusat: `server/lib/db.js` |
+| Router command, event | `YannzAjah-cmd.js`, `handler.js`, `source/message.js` |
+| Plugin manager & feature registry | `library/registry.js`, `library/plugin-kit.js`, `plugins/<kategori>/<command>.js` (1 file = 1 command), logika bersama di `lib/` |
+| Database adapter | `library/yannajah.js` (facade), `source/database.js`; pusat: `server/lib/db.js` |
 | API integration | `library/apiz2z.js`, `library/apiz2z-render.js`, `library/catalog/*.json` |
-| Media | `library/media.js` (ffmpeg spawn, stiker+exif) |
-| Permission | bot: `command.js`; pusat: `server/services/accessControl.js` |
+| Media | `library/converter.js` (ffmpeg spawn), `library/exif.js` (metadata stiker) |
+| Permission | bot: `YannzAjah-cmd.js`; pusat: `server/services/accessControl.js` |
 | Logger & error | `library/logger.js` (redaksi otomatis), `library/errors.js`, `server/lib/errors.js` |
 | Validasi | `server/lib/validate.js`, `library/apiz2z.js#validateParams` |
 | Session | `library/connection.js` (lock + persist), `server/services/sessionService.js` |
 | Dashboard | `server/public/*` |
-| Health & background | `GET /health`, `GET /health/ready`, heartbeat lisensi, pengingat (`plugins/productivity`), auto-save DB |
+| Health & background | `GET /health`, `GET /health/ready`, heartbeat lisensi, pengingat (`lib/productivity.js`), auto-save DB |
 
 ## Alur penting
 
-**Start bot.** Banner → validasi config → `license.verifyStored()` (token lama) atau login nomor + password → DB lokal → registry plugin → `wa.start()` (session lama, atau QR / pairing code untuk nomor bot terdaftar) → heartbeat.
+**Start bot.** Banner → validasi config → `license.verifyStored()` (token lama) atau login nomor + password → DB lokal → registry plugin → `handler.js` (event pesan & grup) → `wa.start()` (session lama, atau QR / pairing code untuk nomor bot terdaftar) → heartbeat.
 
 **Ban / disable / sesi dicabut di dashboard.** Transaksi: ubah status + cabut `bot_sessions` + audit → heartbeat bot berikutnya dapat `401 SESSION_REVOKED` → `license` membuang token dan memancarkan `locked` → `wa.stop()`; `handleClose` tidak reconnect selama lisensi terkunci → router tidak menjalankan fitur apa pun. Login ulang ditolak `BOT_BANNED` sampai di-unban. Bila server lisensi tidak terjangkau lebih lama dari `offlineGraceMinutes` (default 0) bot juga terkunci (tidak ada akses penuh secara default).
 
-**Maintenance.** Global (DEVELOPER) atau per bot (reseller ke atas, dalam cakupannya). Bot tetap terhubung; non-owner dibalas pesan maintenance. Bot milik rank di `exempt_ranks` tidak terkena maintenance global.
+**Maintenance.** Global maupun per bot hanya DEVELOPER. Bot tetap terhubung; non-owner dibalas pesan maintenance. Bot milik rank di `exempt_ranks` tidak terkena maintenance global.
 
 **Satu session = satu proses.** Lokal: lock file di folder session (pid hidup → tolak). Pusat: lease `instance_id` — login proses lain ditolak `409 INSTANCE_ACTIVE` selama proses lama masih heartbeat (< 3 menit), kecuali `force` (proses lama otomatis terkunci). Nomor WhatsApp yang dipairing wajib sama dengan nomor bot di dashboard; jika berbeda session dilepas.
 
@@ -68,15 +68,28 @@ Path database berupa string bertitik atau **array** (wajib array bila kunci meng
 
 ## Menulis plugin
 
+Satu file = satu command, seperti referensi V15 (`plugins/<kategori>/<command>.js`). Logika yang dipakai
+beberapa command ditaruh di `lib/` (contoh: semua game tebakan memakai `lib/tebak.js`).
+
 ```js
-// plugins/contoh/halo.js
-const { feature, textTool } = require('../../library/plugin-kit');
-module.exports = [
-  textTool({ id: 'contoh.balik', name: 'balikteks', category: 'text', description: 'Membalik teks',
-    fn: t => [...t].reverse().join(''), tests: [{ input: 'abc', expect: 'cba' }] }),
-  feature({ id: 'contoh.halo', name: 'halo', category: 'fun', description: 'Menyapa', permission: 'user', scope: 'all',
-    async run(ctx) { await ctx.reply(`Halo ${ctx.m.pushName}!`); } })
-];
+// plugins/fun/halo.js
+'use strict';
+const { feature } = require('../../library/plugin-kit');
+
+module.exports = feature({ id: 'fun.halo', name: 'halo', category: 'fun', description: 'Menyapa', permission: 'user', scope: 'all',
+  async run(ctx) { await ctx.reply(`Halo ${ctx.m.pushName}!`); } });
 ```
+
+```js
+// plugins/text/balikteks.js — fitur teks murni + kasus uji
+'use strict';
+const { textTool } = require('../../library/plugin-kit');
+
+module.exports = textTool({ id: 'text.balik', name: 'balikteks', category: 'text', description: 'Membalik teks',
+  fn: t => [...t].reverse().join(''), tests: [{ input: 'abc', expect: 'cba' }] });
+```
+
+Hook non-command (`onMessage`, mis. anti-link, AFK, jawaban game) berjalan dengan urutan tetap
+`HOOK_ORDER` di `YannzAjah-cmd.js`; hook baru berjalan setelahnya.
 Metadata wajib: `id` unik, `name`, `category`, `description`, `aliases`, `permission` (user/premium/admin/owner), `scope` (all/group/private), `status`, `params`, `dependencies`. Nama/alias yang bentrok ditolak saat load (lihat `npm run features:report`). Plugin format lama (`handler.command = [...]`) tetap didukung lewat adapter.
-**Plugin tidak tepercaya**: Node.js tidak menyediakan sandbox yang aman, jadi file di `plugins/external/` **tidak dimuat** kecuali SHA-256-nya didaftarkan di `settingsbot.js → plugin.trustedExternal`.
+**Plugin tidak tepercaya**: Node.js tidak menyediakan sandbox yang aman, jadi file di `plugins/external/` **tidak dimuat** kecuali SHA-256-nya didaftarkan di `settings.js → plugin.trustedExternal`.

@@ -1,13 +1,14 @@
 'use strict';
 /*
  * YannAjahNew — entry point bot.
- *   node index.js                 (metode pairing sesuai settingsbot.js, default: tanya)
+ *   node index.js                 (metode pairing sesuai settings.js, default: tanya)
  *   node index.js --qr            (paksa QR)
  *   node index.js --pairing-code  (paksa pairing code nomor telepon)
  *
  * Urutan start:
  *   banner -> validasi konfigurasi -> verifikasi/login ke server lisensi pusat (nomor bot + password bot)
- *   -> database lokal -> muat plugin & feature registry -> koneksi WhatsApp (session lama / QR / pairing code)
+ *   -> database lokal -> muat plugin & feature registry -> handler.js (event pesan & grup)
+ *   -> koneksi WhatsApp (session lama / QR / pairing code)
  *   -> heartbeat lisensi (ban/disable/maintenance dari dashboard langsung berlaku).
  * Exit code 78 = ditolak server lisensi / konfigurasi salah (process manager sebaiknya TIDAK restart otomatis).
  */
@@ -16,7 +17,6 @@ const path = require('path');
 const readline = require('readline');
 const chalk = require('chalk');
 const pino = require('pino');
-const { loadConfig, ConfigError } = require('./library/config-loader');
 const { createLogger } = require('./library/logger');
 const { banner } = require('./library/banner');
 const { LicenseClient } = require('./library/license');
@@ -24,11 +24,9 @@ const { WhatsAppManager, loadBaileys } = require('./library/connection');
 const { Apiz2zClient } = require('./library/apiz2z');
 const { Registry } = require('./library/registry');
 const DataBase = require('./source/database');
-const { createYannajah } = require('./yannajah');
-const { createRouter } = require('./command');
-const { serialize } = require('./myfunct/message');
-const { createGroupHandler } = require('./myfunct/handler');
-const { applyLegacyGlobals } = require('./settings');
+const { createYannajah } = require('./library/yannajah');
+const { initializerHandler } = require('./handler');
+const { loadConfig, ConfigError, applyLegacyGlobals } = require('./library/config-loader');
 const { sleep } = require('./library/function');
 
 const EXIT_DENIED = 78;
@@ -135,35 +133,8 @@ async function main() {
   const wa = new WhatsAppManager(config.pairing, { logger: logger.child('wa'), license, baileysLogger, rootDir: ROOT });
   const yannajah = createYannajah({ config, logger, store, license, api, registry, wa });
   global.yannajah = yannajah;   // akses untuk plugin legacy
-  const route = createRouter(yannajah, { config, logger: logger.child('router') });
   require('./library/scheduler').start(yannajah, config);   // absen, jadwal grup, ulang tahun, dll.
-  const onGroup = createGroupHandler(yannajah, { logger });
-  const B = await loadBaileys();
-  const groupMetadata = jid => wa.groupCache.get(jid) ? Promise.resolve(wa.groupCache.get(jid)) : wa.sock.groupMetadata(jid).then(md => { wa.groupCache.set(jid, md); return md; });
-
-  wa.on('messages', async ev => {
-    if (ev.type !== 'notify') return;
-    for (const raw of ev.messages || []) {
-      try {
-        const settings = store.data.settings;
-        // .autoreactsw: baca & beri reaksi status kontak (tidak diproses sebagai command).
-        if (raw.key?.remoteJid === 'status@broadcast') {
-          if (settings.autoReactSw && raw.message && !raw.key.fromMe && raw.key.participant && license.isActive()) {
-            wa.sock.readMessages([raw.key]).catch(() => {});
-            wa.sock.sendMessage('status@broadcast', { react: { text: settings.autoReactEmoji || '💚', key: raw.key } }, { statusJidList: [raw.key.participant] }).catch(() => {});
-          }
-          continue;
-        }
-        if (!raw.message || raw.message.protocolMessage) continue;
-        if (settings.autoread ?? config.chat.autoRead) wa.sock.readMessages([raw.key]).catch(() => {});
-        const m = await serialize(wa.sock, raw, { B, groupMetadata, prefixes: settings.prefix?.length ? settings.prefix : config.prefix.list, allowNoPrefix: config.prefix.allowNoPrefix });
-        if (config.chat.logMessageContent) logger.debug('pesan', { chat: m.chat, cmd: m.command });
-        if ((settings.autotyping ?? config.chat.autoTyping) && m.isCmd) wa.sock.sendPresenceUpdate('composing', m.chat).catch(() => {});
-        await route(m);
-      } catch (e) { logger.error('Gagal memproses pesan', e.message); }
-    }
-  });
-  wa.on('group-participants', onGroup);
+  initializerHandler(yannajah, { config, logger, wa, store, license, B: await loadBaileys() });
   wa.on('open', () => {
     logger.info(`✔ WhatsApp terhubung sebagai ${wa.sock?.user?.id?.split(':')[0] || '?'}`);
     if (config.pairing.followChannelOnConnect && config.links.channelId) wa.sock.newsletterFollow?.(config.links.channelId).catch(() => {});

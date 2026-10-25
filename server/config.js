@@ -1,12 +1,12 @@
 'use strict';
-// Konfigurasi backend/dashboard. Nilai non-rahasia dari settingsbot.js (dashboard.*),
+// Konfigurasi backend/dashboard. Nilai non-rahasia dari settings.js (dashboard.*),
 // secret HANYA dari environment. Di production, secret yang wajib harus ada atau server tidak mau start.
 
 const { loadDotEnv } = require('../library/config-loader');
 
 function buildServerConfig(env = process.env) {
   loadDotEnv();
-  const settings = require('../settingsbot.js').dashboard;
+  const settings = require('../settings.js').dashboard;
   const production = env.NODE_ENV === 'production';
   const publicUrl = (env.DASHBOARD_PUBLIC_URL || `http://${settings.host}:${settings.port}`).replace(/\/+$/, '');
   const cfg = {

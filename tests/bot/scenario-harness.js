@@ -2,13 +2,14 @@
 // Skenario multi-command: satu database bersama, socket tiruan, semua pesan keluar ditangkap.
 // Dipakai test fitur yang menyimpan state (list, sewa, redeem, respon, warn, ...).
 const { UsageError } = require('../../library/errors');
-const { createDatabaseFacade } = require('../../yannajah');
+const { createDatabaseFacade } = require('../../library/yannajah');
 const { loadRegistry, freshStore } = require('./feature-harness');
+const { HOOK_ORDER } = require('../../YannzAjah-cmd');
 
 const GROUP = '120363000000000001@g.us';
 const OWNER = '6281200000001@s.whatsapp.net';
 
-function createScenario({ registry = loadRegistry().registry, config = require('../../settingsbot.js') } = {}) {
+function createScenario({ registry = loadRegistry().registry, config = require('../../settings.js') } = {}) {
   const store = freshStore();
   const db = createDatabaseFacade(store, { dailyLimit: 10, timezone: config.bot.timezone });
   const sent = [];
@@ -62,8 +63,8 @@ function createScenario({ registry = loadRegistry().registry, config = require('
     const isOwner = m.sender === OWNER || opts.owner === true;
     const flags = { isOwner, isPremium: isOwner || db.isPremium(m.sender), isAdmin: Boolean(opts.admin), isBotAdmin: opts.botAdmin !== false };
     const before = sent.length;
-    for (const f of registry.features.values()) {
-      if (typeof f.onMessage !== 'function') continue;
+    const rank = f => (HOOK_ORDER.includes(f.id) ? HOOK_ORDER.indexOf(f.id) : HOOK_ORDER.length);
+    for (const f of [...registry.features.values()].filter(x => typeof x.onMessage === 'function').sort((a, b) => rank(a) - rank(b))) {
       if (await f.onMessage(context(m, f, flags))) return out(before);
     }
     if (m.isCmd) {

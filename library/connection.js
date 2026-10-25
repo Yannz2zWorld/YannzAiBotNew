@@ -43,7 +43,7 @@ class SessionLock {
 class WhatsAppManager extends EventEmitter {
   constructor(cfg, { logger, license, baileysLogger, rootDir = path.join(__dirname, '..'), print = s => process.stdout.write(s + '\n') } = {}) {
     super();
-    this.cfg = cfg;               // settingsbot.pairing
+    this.cfg = cfg;               // settings.pairing
     this.logger = logger;
     this.license = license;
     this.baileysLogger = baileysLogger;

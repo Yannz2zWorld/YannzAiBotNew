@@ -7,10 +7,10 @@ Audit dilakukan atas file yang benar-benar tersedia: dua arsip yang diunggah dan
 | Sumber | Isi | Peran untuk YannAjahNew |
 |---|---|---|
 | `base_buat_bikin_bot_baru.zip` (base Alip/Clutch) | `index.js`, `settings.js`, `menu.js`, `command.js` (switch-case 83 command), `myfunct/message.js`, `source/database.js` (JSON/Mongo), `library/*`, `plugins/` (kosong) | **Struktur** folder & nama file (referensi kedua) |
-| `yann_ai_v15_fixed.zip` (Yann AI V15) | `settings.js`, `YannzAjah-cmd.js` (≈41 rb baris, 1.395 case unik), `handler.js`, `source/message.js`, `lib/*`, `plugins/*` (≈130 plugin), `data/*` (dataset game/islami/gambar) | **Fitur & perilaku**, isi `settingsbot.js` |
+| `yann_ai_v15_fixed.zip` (Yann AI V15) | `settings.js`, `YannzAjah-cmd.js` (≈41 rb baris, 1.395 case unik), `handler.js`, `source/message.js`, `lib/*`, `plugins/*` (≈130 plugin), `data/*` (dataset game/islami/gambar) | **Fitur & perilaku**, isi `settings.js` |
 | Repo `api-docs` (platform apiz2z.web.id) | Express + PostgreSQL (Neon), migrasi SQL, `services/`, `routes/`, Google OAuth (`google-auth-library`), 487 endpoint di `plugin/`, test `node:test` | Pola web/dashboard, autentikasi, dan **sumber kebenaran endpoint APIZ2Z** |
 
-`settingsbot.js` dan `yannajah.js` **belum ada** di kedua referensi, sehingga keduanya dibuat baru (lihat bagian 4).
+`library/yannajah.js` **belum ada** di kedua referensi, sehingga dibuat baru (lihat bagian 4). Struktur file lain mengikuti Yann AI V15 / Lena AI.
 
 ## 2. Temuan & risiko di referensi
 
@@ -24,7 +24,7 @@ Audit dilakukan atas file yang benar-benar tersedia: dua arsip yang diunggah dan
 | 6 | Database base/V15 berisi nomor telepon pengguna nyata | Privasi | Tidak disalin; database lokal mulai kosong |
 | 7 | Fitur V15 untuk konten seksual dari foto orang nyata, spam massal (jpm, pushkontak, nglspam), pemalsuan bukti (fakedana, struk, fitnah), ambil alih grup | Bahaya, melanggar ketentuan WhatsApp | Tidak diimplementasikan; tercatat `disabled` beserta alasannya (`docs/FEATURES.md`) |
 | 8 | Baileys dari fork GitHub/npm alias (`alipclutch-baileys`, `ZrooPro/baileys`) | Supply chain tidak jelas | Memakai paket resmi `@whiskeysockets/baileys@7.0.0-rc14` |
-| 9 | Satu file `command.js`/`YannzAjah-cmd.js` raksasa | Sulit dipelihara/diuji | Plugin modular + feature registry dengan validasi metadata & konflik nama |
+| 9 | Satu file `command.js`/`YannzAjah-cmd.js` raksasa | Sulit dipelihara/diuji | `YannzAjah-cmd.js` tinggal router; 1 file per command di `plugins/<kategori>/` + feature registry dengan validasi metadata & konflik nama |
 | 10 | Endpoint APIZ2Z | Situs `apiz2z.web.id` diblokir network policy container (HTTP 403 proxy) | Endpoint diverifikasi dari **source platform** di repo ini (`plugin/*.js`) lewat `tools/sync-apiz2z-catalog.js` |
 
 ## 3. Pemetaan file lama → baru
@@ -32,21 +32,22 @@ Audit dilakukan atas file yang benar-benar tersedia: dua arsip yang diunggah dan
 | Lama (base / V15) | Baru (YannAjahNew) | Keterangan |
 |---|---|---|
 | `index.js` | `index.js` + `library/connection.js` + `library/license.js` + `library/banner.js` | Entry tetap `index.js`; koneksi & lisensi dipisah |
-| `settings.js` | `settingsbot.js` (konfigurasi) + `settings.js` (shim global legacy) | `settings.js` dipertahankan agar plugin lama tetap jalan |
-| `command.js` | `command.js` (router) + `plugins/**` | Switch-case diganti registry |
-| `menu.js` | `menu.js` | Menu dibangun otomatis dari registry |
-| `myfunct/message.js` | `myfunct/message.js` | Serializer, kini paham LID Baileys 7 |
-| `handler.js` (V15) | `myfunct/handler.js` | Welcome/left |
-| `source/database.js` | `source/database.js` + facade `yannajah.database` di `yannajah.js` | JSON atomik + cadangan `.bak` |
-| `library/function.js`, `converter.js`, `exif.js` | `library/function.js`, `library/media.js` | ffmpeg via `spawn` tanpa shell |
-| `plugins/` (format `handler.command`) | `plugins/` | Format lama tetap didukung lewat adapter (`Registry.adaptLegacy`) |
+| `settings.js` | `settings.js` (konfigurasi) + `applyLegacyGlobals` di `library/config-loader.js` | Global legacy (`global.owner`, `global.mess`, …) tetap diisi agar plugin lama jalan |
+| `YannzAjah-cmd.js` / `lena-cmd.js` | `YannzAjah-cmd.js` (router) + `plugins/<kategori>/<command>.js` | Switch-case diganti registry; 1 file per command |
+| `source/menu-yannai.js` / `source/menu-lenaai.js` | `source/menu-yannai.js` | Menu dibangun otomatis dari registry |
+| `source/message.js` | `source/message.js` | Serializer, kini paham LID Baileys 7 |
+| `handler.js` | `handler.js` (+ template di `lib/welcome.js`) | Event pesan & welcome/left |
+| `source/database.js` | `source/database.js` + facade `yannajah.database` di `library/yannajah.js` | JSON atomik + cadangan `.bak` |
+| `library/function.js`, `converter.js`, `exif.js` | `library/function.js`, `library/converter.js`, `library/exif.js` | ffmpeg via `spawn` tanpa shell |
+| `lib/*` (game.js, economy.js, tictactoe.js, …) | `lib/*` (game.js, tebak.js, economy.js, minigame.js, welcome.js, …) | Logika bersama yang dipakai beberapa command |
+| `plugins/<kategori>/<command>.js` (format `handler.command`) | `plugins/<kategori>/<command>.js` | Format lama tetap didukung lewat adapter (`Registry.adaptLegacy`) |
 | `data/*` (V15) | `data/*` | Hanya dataset yang layak (tanpa set vulgar/foto orang nyata) |
 | — | `server/` | Backend pusat + dashboard (baru) |
 
 ## 4. Keputusan tanggung jawab file wajib
 
-- **`settingsbot.js`** — konfigurasi non-rahasia bot (identitas, prefix, mode chat, pairing, lisensi, database, API, plugin, media, limit, permission, cache, concurrency, retry, timeout, pesan V15) + nama environment variable untuk secret. Divalidasi saat start (`library/config-loader.js`); error tidak pernah mencetak nilai secret.
-- **`yannajah.js`** — namespace `yannajah` dan **facade database bot** (`yannajah.database.get/set/user/group/save`), plus `sendmessage/reply/react/sendFile`, `api`, `auth`, `plugins`. Database **pusat** (akun, rank, bot, kredensial, audit) tidak diakses langsung oleh bot; bot hanya memakai API lisensi, jadi credential database pusat tidak pernah berada di mesin bot.
+- **`settings.js`** — konfigurasi non-rahasia bot (identitas, prefix, mode chat, pairing, lisensi, database, API, plugin, media, limit, permission, cache, concurrency, retry, timeout, pesan V15) + nama environment variable untuk secret. Divalidasi saat start (`library/config-loader.js`); error tidak pernah mencetak nilai secret.
+- **`library/yannajah.js`** — namespace `yannajah` dan **facade database bot** (`yannajah.database.get/set/user/group/save`), plus `sendmessage/reply/react/sendFile`, `api`, `auth`, `plugins`. Database **pusat** (akun, rank, bot, kredensial, audit) tidak diakses langsung oleh bot; bot hanya memakai API lisensi, jadi credential database pusat tidak pernah berada di mesin bot.
 
 ## 5. Stack yang dipilih & alasannya
 

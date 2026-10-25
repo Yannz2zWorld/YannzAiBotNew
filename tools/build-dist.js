@@ -2,7 +2,7 @@
 // Build distribusi BOT (tanpa server/ backend, tanpa test, tanpa data runtime) ke dist/YannAjahNew.
 // Kode inti bot diobfuscate dengan javascript-obfuscator sebagai LAPISAN TAMBAHAN saja —
 // bukan pengganti autentikasi/secret management, dan tidak membuat kode mustahil direkayasa balik.
-// Tidak diobfuscate: settingsbot.js & settings.js (harus bisa diedit), katalog JSON, dataset, dokumentasi.
+// Tidak diobfuscate: settings.js (harus bisa diedit), katalog JSON, dataset, dokumentasi.
 //
 //   node tools/build-dist.js [--no-obfuscate] [--license-url https://lisensi.domainkamu.com]
 //
@@ -23,8 +23,9 @@ if (licenseUrl) {
   const local = u && ['localhost', '127.0.0.1', '::1'].includes(u.hostname);
   if (!u || (u.protocol !== 'https:' && !local)) { console.error('--license-url harus URL https (http hanya untuk localhost)'); process.exit(1); }
 }
-const INCLUDE = ['index.js', 'yannajah.js', 'command.js', 'menu.js', 'settings.js', 'settingsbot.js', 'package.json', 'package-lock.json', '.env.example', 'library', 'myfunct', 'source', 'plugins', 'data', 'assets', 'README.md'];
-const NO_OBFUSCATE = new Set(['settingsbot.js', 'settings.js']);
+// Struktur seperti Yann AI V15: index.js, handler.js, YannzAjah-cmd.js, settings.js, source/, lib/, library/, plugins/.
+const INCLUDE = ['index.js', 'handler.js', 'YannzAjah-cmd.js', 'settings.js', 'package.json', 'package-lock.json', '.env.example', 'source', 'lib', 'library', 'plugins', 'data', 'assets', 'README.md'];
+const NO_OBFUSCATE = new Set(['settings.js']);
 const OBF_OPTIONS = {
   compact: true, controlFlowFlattening: false, deadCodeInjection: false, debugProtection: false, selfDefending: false,
   identifierNamesGenerator: 'hexadecimal', renameGlobals: false, stringArray: true, stringArrayThreshold: 0.6,
