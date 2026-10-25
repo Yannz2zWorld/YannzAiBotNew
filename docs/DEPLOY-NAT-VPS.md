@@ -39,11 +39,11 @@ Postgres tidak dipasang di VPS supaya RAM & CPU hemat.
 
 ## 2. Ambil kode
 
-YannAjahNew punya repo sendiri (`Yannz2zWorld/YannAjahNew`), terpisah dari CDN/APIZ2Z:
+YannAjahNew punya repo sendiri (`Yannz2zWorld/YannzAiBotNew`), terpisah dari CDN/APIZ2Z:
 
 ```bash
 apt install -y ffmpeg
-git clone https://github.com/Yannz2zWorld/YannAjahNew.git /opt/yannajah
+git clone https://github.com/Yannz2zWorld/YannzAiBotNew.git /opt/yannajah
 cd /opt/yannajah
 npm ci --omit=dev
 ```

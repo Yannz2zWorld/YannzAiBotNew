@@ -51,7 +51,7 @@ sudo -u postgres psql -c "CREATE DATABASE yannajah OWNER yannajah_app;"
 
 # 3. Aplikasi (user non-root)
 sudo adduser --disabled-password yannajah && sudo -iu yannajah
-git clone https://github.com/Yannz2zWorld/YannAjahNew.git && cd YannAjahNew && npm ci --omit=dev
+git clone https://github.com/Yannz2zWorld/YannzAiBotNew.git && cd YannzAiBotNew && npm ci --omit=dev
 cp .env.example .env && chmod 600 .env && nano .env      # isi semua secret
 npm run migrate
 node server/cli.js bootstrap-developer --username kamu --email kamu@gmail.com

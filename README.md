@@ -26,7 +26,7 @@ Struktur file mengikuti base bot (referensi kedua); fitur & perilaku mengikuti Y
 ## Instalasi
 
 ```bash
-git clone https://github.com/Yannz2zWorld/YannAjahNew.git && cd YannAjahNew
+git clone https://github.com/Yannz2zWorld/YannzAiBotNew.git && cd YannzAiBotNew
 npm ci
 cp .env.example .env && chmod 600 .env    # isi nilai sesuai komentar di file
 ```
