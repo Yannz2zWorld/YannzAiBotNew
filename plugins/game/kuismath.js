@@ -3,7 +3,7 @@ const { feature } = require('../../library/plugin-kit');
 const games = require('../../lib/game');
 const { MATH_LEVELS, busy } = require('../../lib/minigame');
 
-module.exports = feature({ id: 'game.math', name: 'kuismath', aliases: ['math', 'mathquiz'], category: 'game', description: 'Kuis matematika: .kuismath [easy|medium|hard]', usage: '[level]', cooldown: 5,
+module.exports = feature({ id: 'game.math', name: 'kuismath', aliases: ['math', 'mathquiz', 'mathchallenge'], category: 'game', description: 'Kuis matematika: .kuismath [easy|medium|hard]', usage: '[level]', cooldown: 5,
   async run(ctx) {
     busy(ctx);
     const level = MATH_LEVELS[ctx.args[0]] ? ctx.args[0] : 'easy';

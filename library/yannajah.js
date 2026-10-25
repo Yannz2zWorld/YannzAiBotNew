@@ -149,7 +149,7 @@ function createYannajah({ config, logger, store, license, api, registry, wa = nu
   yannajah.react = (m, emoji) => yannajah.sendmessage(m.chat, { react: { text: String(emoji || ''), key: m.key } }, { allowWhenLocked: true }).catch(() => null);
 
   // input: Buffer | URL https | { buffer, mime }. Tipe pesan dipilih dari isi file sebenarnya.
-  yannajah.sendFile = async (jid, input, { caption = '', fileName, mimetype, quoted, asDocument = false, ptt = false, gif = false } = {}) => {
+  yannajah.sendFile = async (jid, input, { caption = '', fileName, mimetype, quoted, asDocument = false, ptt = false, gif = false, ptv = false } = {}) => {
     let buffer, mime = mimetype;
     if (Buffer.isBuffer(input)) buffer = input;
     else if (input && Buffer.isBuffer(input.buffer)) { buffer = input.buffer; mime = mime || input.mime; }
@@ -164,7 +164,7 @@ function createYannajah({ config, logger, store, license, api, registry, wa = nu
     const name = fileName || `yannajah-${Date.now()}.${sniff?.ext || (mime.split('/')[1] || 'bin').replace(/[^a-z0-9]/gi, '')}`;
     const msg = kind === 'image' ? { image: buffer, caption }
       : kind === 'gif' ? { video: buffer, gifPlayback: true, caption }
-      : kind === 'video' ? { video: buffer, caption, gifPlayback: gif }
+      : kind === 'video' ? (ptv ? { video: buffer, ptv: true } : { video: buffer, caption, gifPlayback: gif })
       : kind === 'audio' ? { audio: buffer, mimetype: mime === 'audio/ogg' && ptt ? 'audio/ogg; codecs=opus' : mime, ptt }
       : kind === 'sticker' ? { sticker: buffer }
       : { document: buffer, mimetype: mime, fileName: name, caption };

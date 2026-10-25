@@ -67,6 +67,7 @@ const AUDIO_FILTERS = {
   '8d': ['Audio 8D (berputar kiri-kanan)', 'apulsator=hz=0.125'],
   chorus: ['Chorus', 'chorus=0.6:0.9:50|60:0.4|0.32:0.25|0.4:2|1.3'],
   flanger: ['Flanger', 'flanger=delay=5:depth=5'],
+  sad: ['Sad (pelan + gema lembut)', 'asetrate=44100*0.9,aresample=44100,atempo=0.95,aecho=0.8:0.85:120:0.35,lowpass=f=6000'],
   smooth: ['Halus (lowpass)', 'lowpass=f=3000,volume=1.2'],
   radio: ['Efek radio jadul', 'highpass=f=300,lowpass=f=3400,acrusher=bits=12']
 };

@@ -78,19 +78,23 @@
   },
   {
    "name": "addp",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Menulis/menghapus kode plugin lewat chat (setara eval) — edit file di panel."
   },
   {
    "name": "addplug",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Menulis/menghapus kode plugin lewat chat (setara eval) — edit file di panel."
   },
   {
    "name": "addplugin",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Menulis/menghapus kode plugin lewat chat (setara eval) — edit file di panel."
   },
   {
    "name": "addplugins",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Menulis/menghapus kode plugin lewat chat (setara eval) — edit file di panel."
   },
   {
    "name": "addprefix",
@@ -270,7 +274,8 @@
   },
   {
    "name": "animeshota",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Konten seksual / melibatkan anak — tidak disediakan."
   },
   {
    "name": "animetejina",
@@ -1077,11 +1082,13 @@
   },
   {
    "name": "delplugin",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Menulis/menghapus kode plugin lewat chat (setara eval) — edit file di panel."
   },
   {
    "name": "delplugins",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Menulis/menghapus kode plugin lewat chat (setara eval) — edit file di panel."
   },
   {
    "name": "delprefix",
@@ -1435,15 +1442,18 @@
   },
   {
    "name": "fakewa",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Tangkapan chat WhatsApp palsu (pemalsuan)."
   },
   {
    "name": "fakewhatsapp",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Tangkapan chat WhatsApp palsu (pemalsuan)."
   },
   {
    "name": "fakexnxx",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Konten seksual / melibatkan anak — tidak disediakan."
   },
   {
    "name": "faktadunia",
@@ -1520,7 +1530,8 @@
   },
   {
    "name": "fwa",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Tangkapan chat WhatsApp palsu (pemalsuan)."
   },
   {
    "name": "galaxian",
@@ -2044,7 +2055,8 @@
   },
   {
    "name": "kontolscan",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Konten seksual / melibatkan anak — tidak disediakan."
   },
   {
    "name": "kudeta",
@@ -2214,11 +2226,13 @@
   },
   {
    "name": "memekprimbon",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Konten seksual / melibatkan anak — tidak disediakan."
   },
   {
    "name": "memekscan",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Konten seksual / melibatkan anak — tidak disediakan."
   },
   {
    "name": "menu-ai",
@@ -2943,11 +2957,13 @@
   },
   {
    "name": "randomjustina",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Foto acak orang biasa (bukan publik figur) tanpa izin."
   },
   {
    "name": "randomkayes",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Foto acak orang biasa (bukan publik figur) tanpa izin."
   },
   {
    "name": "randomkpop",
@@ -2967,15 +2983,18 @@
   },
   {
    "name": "randomppcp",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Foto acak orang biasa (bukan publik figur) tanpa izin."
   },
   {
    "name": "randomprofil",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Foto acak orang biasa (bukan publik figur) tanpa izin."
   },
   {
    "name": "randomprofile",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Foto acak orang biasa (bukan publik figur) tanpa izin."
   },
   {
    "name": "randompubg",
@@ -3168,11 +3187,13 @@
   },
   {
    "name": "saveplugin",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Menulis/menghapus kode plugin lewat chat (setara eval) — edit file di panel."
   },
   {
    "name": "saveplugins",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Menulis/menghapus kode plugin lewat chat (setara eval) — edit file di panel."
   },
   {
    "name": "saveweb",
@@ -3180,11 +3201,13 @@
   },
   {
    "name": "scankontol",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Konten seksual / melibatkan anak — tidak disediakan."
   },
   {
    "name": "scanmemek",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Konten seksual / melibatkan anak — tidak disediakan."
   },
   {
    "name": "schedmsg",
@@ -3482,7 +3505,8 @@
   },
   {
    "name": "sp",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Menulis/menghapus kode plugin lewat chat (setara eval) — edit file di panel."
   },
   {
    "name": "space",
@@ -3711,7 +3735,8 @@
   },
   {
    "name": "svp",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Menulis/menghapus kode plugin lewat chat (setara eval) — edit file di panel."
   },
   {
    "name": "swgc",
@@ -3834,7 +3859,8 @@
   },
   {
    "name": "toaktivis",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Edit foto orang nyata ke situasi yang bisa jadi fitnah/hoaks (penjara, demo, parlemen, pasangan palsu)."
   },
   {
    "name": "toanime",
@@ -3855,15 +3881,18 @@
   },
   {
    "name": "todemo",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Edit foto orang nyata ke situasi yang bisa jadi fitnah/hoaks (penjara, demo, parlemen, pasangan palsu)."
   },
   {
    "name": "todemojalanan",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Edit foto orang nyata ke situasi yang bisa jadi fitnah/hoaks (penjara, demo, parlemen, pasangan palsu)."
   },
   {
    "name": "todemonstrasi",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Edit foto orang nyata ke situasi yang bisa jadi fitnah/hoaks (penjara, demo, parlemen, pasangan palsu)."
   },
   {
    "name": "todino",
@@ -3875,7 +3904,8 @@
   },
   {
    "name": "todpr",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Edit foto orang nyata ke situasi yang bisa jadi fitnah/hoaks (penjara, demo, parlemen, pasangan palsu)."
   },
   {
    "name": "tofigure",
@@ -3908,7 +3938,8 @@
   },
   {
    "name": "tomangu",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Edit foto orang nyata ke situasi yang bisa jadi fitnah/hoaks (penjara, demo, parlemen, pasangan palsu)."
   },
   {
    "name": "tomanhwa",
@@ -3937,7 +3968,8 @@
   },
   {
    "name": "topacar",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Edit foto orang nyata ke situasi yang bisa jadi fitnah/hoaks (penjara, demo, parlemen, pasangan palsu)."
   },
   {
    "name": "topbalance",
@@ -3945,7 +3977,8 @@
   },
   {
    "name": "topenjara",
-   "status": "planned"
+   "status": "disabled",
+   "reason": "Edit foto orang nyata ke situasi yang bisa jadi fitnah/hoaks (penjara, demo, parlemen, pasangan palsu)."
   },
   {
    "name": "topmoney",
@@ -4348,6 +4381,6 @@
    "wheat"
   ]
  },
- "curatedAt": "2026-10-24",
+ "curatedAt": "2026-10-25T09:41:07.792Z",
  "v15NamesRaw": 1617
 }

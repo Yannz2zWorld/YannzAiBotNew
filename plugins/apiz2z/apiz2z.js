@@ -55,6 +55,30 @@ const NAMES = {
   '/api/primbon/zodiac': ['zodiak', ['zodiac']], '/api/primbon/nomorhoki': ['nomorhoki', []], '/api/primbon/cocokpasangan': ['cocokpasangan', []], '/api/primbon/ramaljodoh': ['ramaljodoh', []],
   '/api/news/cnn': ['cnn', ['berita']], '/api/news/detik': ['detik', []], '/api/news/kompas': ['kompas', []], '/api/news/cnbc': ['cnbc', []], '/api/news/antara': ['antara', []]
 };
+// Nama command Yann AI V15 / Lena AI tambahan untuk endpoint yang fungsinya sama (alias).
+const V15_ALIASES = {
+  '/api/download/play': ['play1', 'playmusik', 'playv2'], '/api/download/ytmp4': ['playvid', 'playvidyt', 'youtubemp4'],
+  '/api/download/capcut': ['capcutdownload'], '/api/download/pinterest': ['downloadpin', 'downpin', 'pindown'], '/api/download/github': ['gitclone'],
+  '/api/download/telestick': ['stele', 'stickertele', 'telesticker'], '/api/news/cnbc': ['beritacnbc', 'cnbcnews'], '/api/news/cnn': ['news'],
+  '/api/search/npm': ['npmjs', 'npmstalk'], '/api/search/myanimelist': ['carianime', 'searchanime', 'animeinfo'],
+  '/api/search/groupsor': ['carigrupwa', 'carigrupwav2', 'carigrupwav3', 'carigroupv2', 'carigroupv3'], '/api/search/telestick': ['caritele', 'searchtelegram'],
+  '/api/textpro/glitch': ['glitchtext', 'neonglitch'], '/api/textpro/blackpink': ['blackpinklogo', 'blackpinkstyle'], '/api/textpro/typography': ['typographytext'],
+  '/api/textpro/graffiti': ['grafitti'], '/api/textpro/cartoon-graffiti': ['cartoonstyle'], '/api/textpro/write-graffiti': ['writetext'], '/api/textpro/wolf-galaxy': ['galaxy', 'galaxystyle'],
+  '/api/maker/brat': ['bratbiasa', 'bratt'], '/api/maker/brathd': ['bratbiasahd'], '/api/maker/bratanime': ['bratgura'], '/api/maker/iqc-pink': ['bratpink'],
+  '/api/canvas/iqc': ['iphonequoted'], '/api/canvas/iqc-v2': ['iphonequoted2', 'iqc3'], '/api/canvas/qcwa': ['qc1'], '/api/canvas/quotly': ['qc2'],
+  '/api/canvas/musiccard': ['cardmusik', 'musikcard'],
+  '/api/ai/image-gen': ['createimage', 'generateimage', 'imgai', 'gptimage', 'gptimg', 'freecreate'], '/api/ai/nano-banana': ['editai', 'editimg', 'aiedit', 'photoai'],
+  '/api/tools/text-to-speech': ['aitts', 'text2speech'], '/api/primbon/ramalan-jodoh-bali': ['jodohbali'], '/api/primbon/nomorhoki': ['nomerhoki', 'nohoki'],
+  '/api/primbon/artinama': ['arti-nama'], '/api/primbon/cocokpasangan': ['kecocokanpasangan', 'kecocokannama', 'namacocok', 'cocoknama'],
+  '/api/primbon/ramaljodoh': ['ramalanjodoh', 'ramalancinta'], '/api/primbon/rezeki-hoki': ['hoki'], '/api/primbon/zodiac': ['ramalanzodiak'],
+  '/api/tools/upscale': ['hd2', 'unblur', 'resimg', 'resolusiimage'], '/api/tools/removebg': ['rembg'], '/api/tools/dewatermark': ['hapuswatermark', 'removewatermark'],
+  '/api/tools/image-to-prompt': ['img2prompt'], '/api/tools/removevokal': ['vocalremover'], '/api/tools/webtozip': ['saveweb'], '/api/tools/screenshot-v2': ['ssp'],
+  '/api/tools/skiplink': ['shortlink-dl'], '/api/tools/tinyurl': ['shortlink2'], '/api/tools/countryinfo': ['infonegara'], '/api/image/sketch': ['sketsa', 'sketsa2'],
+  '/api/maker/emojimix': ['mixemoji'], '/api/maker/emojitogif': ['emojigif'], '/api/games/tebak-karakter-ff': ['tebakff'], '/api/stalk/freefire': ['cekff'],
+  '/api/random/anime-quote': ['qanime', 'animequotes', 'randomquotenime'], '/api/random/waifu': ['randomwaifu'], '/api/random/meme': ['randommeme'],
+  '/api/download/threads': ['threadsdown'], '/api/stalk/tiktok': ['stalktiktok'], '/api/download/spotify': ['spdown'], '/api/ai/chatgpt': ['gpt5plus', 'gptonline', 'duckai', 'yannai', 'yannaimd']
+};
+
 // Kata kategori di path yang dibuang saat membuat nama otomatis.
 const GENERIC = new Set(['download', 'search', 'ai', 'tools', 'maker', 'canvas', 'stalk', 'news', 'games', 'game', 'random', 'info', 'primbon', 'textpro', 'islamic', 'fun', 'image', 'imgedit', 'ephoto', 'check', 'analyze', 'comments', 'apk', 'detail', 'top', 'audio', 'lk21', 'manga']);
 const CATEGORY = { ai: 'ai', downloader: 'downloader', search: 'search', tools: 'tools', maker: 'maker', canvas: 'canvas', stalk: 'stalk', news: 'news', games: 'games', random: 'random', info: 'info', primbon: 'primbon', textpro: 'textpro', islamic: 'islamic', anime: 'anime', fun: 'fun', image: 'image', check: 'check', movie: 'movie', music: 'music', ephoto: 'ephoto' };
@@ -111,6 +135,7 @@ function build(registry) {
       const a = autoName(ep.path);
       if (NAMES[ep.path]) [name, aliases] = NAMES[ep.path];
       else name = used.has(a.name) || !a.name ? a.full : a.name;
+      aliases = [...(aliases || []), ...(V15_ALIASES[ep.path] || [])];
       if (used.has(name)) name = a.full;
       if (/^\d/.test(name)) name = 'x' + name;
       let n = 2; const base = name; while (used.has(name)) name = `${base}${n++}`;
@@ -152,3 +177,4 @@ module.exports = registry => build(registry);
 module.exports.parseInput = parseInput;
 module.exports.autoName = autoName;
 module.exports.NAMES = NAMES;
+module.exports.V15_ALIASES = V15_ALIASES;

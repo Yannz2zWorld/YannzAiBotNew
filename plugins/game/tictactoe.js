@@ -5,7 +5,7 @@ const { UsageError } = require('../../library/errors');
 const { jidUser } = require('../../library/function');
 const { busy, renderBoard, reward, winner } = require('../../lib/minigame');
 
-module.exports = feature({ id: 'game.tictactoe', name: 'tictactoe', aliases: ['ttt'], category: 'game', scope: 'group', description: 'Tictactoe 2 pemain: .tictactoe @lawan, lalu kirim angka 1-9', usage: '@lawan', cooldown: 5,
+module.exports = feature({ id: 'game.tictactoe', name: 'tictactoe', aliases: ['ttt', 'tictactoe2', 'tictactoerich'], category: 'game', scope: 'group', description: 'Tictactoe 2 pemain: .tictactoe @lawan, lalu kirim angka 1-9', usage: '@lawan', cooldown: 5,
   async run(ctx) {
     busy(ctx);
     const opp = ctx.m.mentionedJid?.[0] || ctx.m.quoted?.sender;

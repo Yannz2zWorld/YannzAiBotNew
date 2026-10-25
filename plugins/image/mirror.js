@@ -3,7 +3,7 @@ const { feature } = require('../../library/plugin-kit');
 const { UsageError } = require('../../library/errors');
 const { loadImage } = require('../../lib/image');
 
-module.exports = feature({ id: 'image.mirror', name: 'mirror', aliases: ['mirrorimg'], category: 'image', description: 'Cermin gambar: .mirror kiri/kanan/atas/bawah (reply gambar)', usage: '<kiri|kanan|atas|bawah>', cooldown: 5, limit: 1,
+module.exports = feature({ id: 'image.mirror', name: 'mirror', aliases: ['mirrorimg', 'mirror2', 'mirrorimg2'], category: 'image', description: 'Cermin gambar: .mirror kiri/kanan/atas/bawah (reply gambar)', usage: '<kiri|kanan|atas|bawah>', cooldown: 5, limit: 1,
   async run(ctx) {
     const mode = (ctx.args[0] || '').toLowerCase();
     if (!['kiri', 'kanan', 'atas', 'bawah'].includes(mode)) throw new UsageError(`🪞 *MIRROR*\nReply gambar lalu pilih mode:\n${ctx.prefix}mirror kiri / kanan / atas / bawah`);

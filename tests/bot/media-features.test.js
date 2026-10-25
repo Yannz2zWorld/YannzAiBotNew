@@ -38,7 +38,7 @@ after(() => {
 
 // fitur -> [fixture, mime fixture, args, regex mime hasil]
 function plan(f) {
-  if (f.source !== 'internal') return null;   // command APIZ2Z diuji di apiz2z.test.js
+  if (f.source !== 'internal' || f.dependencies?.apiz2z) return null;   // butuh APIZ2Z: diuji di apiz2z.test.js
   if (f.category === 'image') { const extra = { resize: ['60'], mirror: ['kiri'], crop: ['1:1'], rotate: ['90'] }; return f.name === 'imageinfo' ? ['image', 'image/png', [], null] : ['image', 'image/png', extra[f.name] || [], /^image\/png$/]; }
   if (f.category === 'sticker') {
     if (f.name === 'sticker') return ['image', 'image/png', [], /^image\/webp$/];
@@ -49,6 +49,8 @@ function plan(f) {
     if (f.name === 'toimg') return ['webp', 'image/webp', [], /^image\/png$/];
     if (f.name === 'tovideo') return ['video', 'video/mp4', [], /^video\/mp4$/];
     if (f.name === 'togif') return ['video', 'video/mp4', [], /^video\/mp4$/];
+    if (f.name === 'ptvtovideo') return ['video', 'video/mp4', [], /^video\/mp4$/];
+    if (f.name === 'volumevideo') return ['video', 'video/mp4', ['2'], /^video\/mp4$/];
     if (f.name === 'tovn') return ['audio', 'audio/mpeg', [], /^audio\/ogg$/];
     if (f.name === 'volumeaudio') return ['audio', 'audio/mpeg', ['1.5'], /^audio\/mpeg$/];
     if (f.name === 'potongaudio') return ['audio', 'audio/mpeg', ['0', '1'], /^audio\/mpeg$/];
