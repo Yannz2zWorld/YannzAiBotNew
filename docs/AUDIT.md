@@ -1,6 +1,6 @@
 # Audit & pemetaan referensi
 
-Audit dilakukan atas file yang benar-benar tersedia: dua arsip yang diunggah dan repositori `api-docs` (tempat proyek ini berada).
+Audit dilakukan atas file yang benar-benar tersedia: dua arsip yang diunggah dan repositori `api-docs` (tempat proyek ini dikembangkan sebelum dipindah ke repo `YannAjahNew`).
 
 ## 1. Sumber yang diaudit
 

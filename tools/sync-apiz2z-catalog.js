@@ -2,16 +2,19 @@
 // Membuat library/catalog/apiz2z-endpoints.json dari SOURCE platform APIZ2Z (repo api-docs: folder plugin/).
 // Hanya endpoint yang benar-benar terdaftar di source yang masuk katalog — tidak ada endpoint karangan.
 //
-//   node tools/sync-apiz2z-catalog.js [path-ke-repo-api-docs]
+//   node tools/sync-apiz2z-catalog.js <path-ke-clone-repo-api-docs>
 //
-// Default path: folder induk proyek ini (YannAjahNew berada di dalam repo api-docs).
+// Path wajib (atau env APIZ2Z_SOURCE_DIR): YannAjahNew repo terpisah dari api-docs, jadi clone
+// api-docs di tempat lain lalu tunjuk ke sana.
 // Endpoint "backupOnly" (cadangan failover, tidak tampil publik) tidak dimasukkan.
 
 const fs = require('fs');
 const path = require('path');
 const Module = require('module');
 
-const root = path.resolve(process.argv[2] || path.join(__dirname, '..', '..'));
+const src = process.argv[2] || process.env.APIZ2Z_SOURCE_DIR;
+if (!src) { console.error('Pakai: node tools/sync-apiz2z-catalog.js <path-ke-clone-repo-api-docs>'); process.exit(2); }
+const root = path.resolve(src);
 const pluginDir = path.join(root, 'plugin');
 const out = path.join(__dirname, '..', 'library', 'catalog', 'apiz2z-endpoints.json');
 

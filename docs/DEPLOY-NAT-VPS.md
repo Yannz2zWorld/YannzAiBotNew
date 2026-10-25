@@ -39,13 +39,12 @@ Postgres tidak dipasang di VPS supaya RAM & CPU hemat.
 
 ## 2. Ambil kode
 
-YannAjahNew ada di repo yang sama (`api-docs/YannAjahNew`). Clone terpisah dari CDN supaya update tidak saling mengganggu:
+YannAjahNew punya repo sendiri (`Yannz2zWorld/YannAjahNew`), terpisah dari CDN/APIZ2Z:
 
 ```bash
 apt install -y ffmpeg
-git clone https://github.com/Yannz2zWorld/api-docs.git /opt/yannajah
-# selama YannAjahNew belum di-merge ke main: git clone -b ccr-58da9a5a-szzl5v ... /opt/yannajah
-cd /opt/yannajah/YannAjahNew
+git clone https://github.com/Yannz2zWorld/YannAjahNew.git /opt/yannajah
+cd /opt/yannajah
 npm ci --omit=dev
 ```
 (Repo private: username GitHub + Personal Access Token, sama seperti saat pasang CDN.)
@@ -53,7 +52,7 @@ npm ci --omit=dev
 ## 3. `.env`
 
 ```bash
-cd /opt/yannajah/YannAjahNew && cp .env.example .env && chmod 600 .env && nano .env
+cd /opt/yannajah && cp .env.example .env && chmod 600 .env && nano .env
 ```
 
 Isi (nilai rahasia **jangan** dikirim ke chat):
@@ -113,7 +112,7 @@ Darurat (lupa password): `node server/cli.js set-password --username yann` di se
 1. Dashboard → **Bot** → *Tambah bot*: nama, nomor WhatsApp bot, password bot.
 2. Login + pairing pertama di SSH (Termius/Termux):
    ```bash
-   cd /opt/yannajah/YannAjahNew
+   cd /opt/yannajah
    npm run start:pairing
    ```
    Isi nomor bot + password bot → kode pairing muncul → di HP nomor bot: WhatsApp → Perangkat tertaut →
@@ -128,7 +127,7 @@ Darurat (lupa password): `node server/cli.js set-password --username yann` di se
 ## Update kode
 
 ```bash
-cd /opt/yannajah && git pull && cd YannAjahNew && npm ci --omit=dev && npm run migrate \
+cd /opt/yannajah && git pull && npm ci --omit=dev && npm run migrate \
   && pm2 restart yannajah-dashboard && pm2 restart yannajah-bot
 ```
 
@@ -138,7 +137,7 @@ cd /opt/yannajah && git pull && cd YannAjahNew && npm ci --omit=dev && npm run m
 apt clean && npm cache clean --force && pm2 flush && journalctl --vacuum-size=50M   # bersihkan disk
 pm2 install pm2-logrotate                                                            # sekali saja (kalau belum dari CDN)
 ```
-- Log bot: `/opt/yannajah/YannAjahNew/library/database/logs/yannajah.log` — kosongkan berkala bila besar: `truncate -s 0 <file>`.
+- Log bot: `/opt/yannajah/library/database/logs/yannajah.log` — kosongkan berkala bila besar: `truncate -s 0 <file>`.
 - Nyalakan **Auto-Renew** di panel VPS (VPS mati = dashboard mati = bot berhenti, gagal aman).
 - Pantau `https://lisensi.apiz2z.web.id/health/ready` (mis. UptimeRobot gratis).
 

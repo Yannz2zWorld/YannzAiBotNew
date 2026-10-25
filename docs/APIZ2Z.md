@@ -54,4 +54,4 @@ Semua command APIZ2Z: `limit: 1`, cooldown 5 detik, status `needs_api_key` bila 
 
 ## Memperbarui katalog
 
-Setelah platform APIZ2Z menambah/mengubah endpoint: `npm run catalog:sync` (di dalam repo `api-docs`, butuh `npm ci` di root repo) → `npm test` → `npm run features:report`.
+Setelah platform APIZ2Z menambah/mengubah endpoint: `npm run catalog:sync -- /path/ke/clone/api-docs` (clone repo `api-docs` terpisah + `npm ci` di sana) → `npm test` → `npm run features:report`.
