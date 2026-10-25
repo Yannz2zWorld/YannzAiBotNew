@@ -64,13 +64,30 @@ global.cloudflareApiToken = 'token cf'
 global.cloudflareDomain = 'domain.com'
 
 // rest api nih
-// API utama YannAjah = APIZ2Z, API key-nya diisi di file .env (APIZ2Z_API_KEY=...)
-global.apiz2z = "https://apiz2z.web.id"
+global.apialip = "https://api.clutch.web.id"
+global.apikeyalip = "" // kalo mau pake apikey sendiri login aja ke webnya
+global.btc = "https://api.botcahx.eu.org"
+global.apibotcahx = ""
+global.dongtubeapi = "https://api.dongtube.id"
+global.apikeydongtube = ""
+global.termai = "https://api.termai.cc"
+global.apitermai = ""
+global.apiPitu = "https://api.pitucode.com"
+global.PituKey = ""
+global.Theresav = "https://api.theresav.eu"
+global.TheresaApi = ""
 global.api = {
-    apiz2z: {
-        url: global.apiz2z
+    xterm: {
+        url: global.termai,
+        key: global.apitermai
     }
 }
+
+// API utama YannAjah = APIZ2Z, API key-nya diisi di file .env (APIZ2Z_API_KEY=...)
+global.apiz2z = "https://apiz2z.web.id"
+
+// apikey ambil di https://alipshop.clutch.web.id
+global.amPremApikey = ''
 
 // ========PANEL SETTING !!!===============
 global.egg = "15" // Egg ID
