@@ -1,8 +1,9 @@
 'use strict';
 // Build distribusi BOT (tanpa server/ backend, tanpa test, tanpa data runtime) ke dist/YannAjahNew.
-// Kode inti bot diobfuscate dengan javascript-obfuscator sebagai LAPISAN TAMBAHAN saja —
-// bukan pengganti autentikasi/secret management, dan tidak membuat kode mustahil direkayasa balik.
-// Tidak diobfuscate: settingsbot.js (harus bisa diedit), katalog JSON, dataset, dokumentasi.
+// Seperti Yann AI V15: HANYA yannajah.js (entry, berisi tautan web database) yang diobfuscate dengan
+// javascript-obfuscator. File lain (handler.js, yannai-cmd.js, settingsbot.js, source/, lib/, library/,
+// plugins/) tetap kode biasa supaya bisa dibaca & diedit. Obfuscation hanya lapisan tambahan, bukan
+// pengganti autentikasi, dan tidak membuat kode mustahil direkayasa balik.
 //
 //   node tools/build-dist.js [--no-obfuscate] [--license-url https://lisensi.domainkamu.com]
 //
@@ -25,7 +26,7 @@ if (licenseUrl) {
 }
 // Struktur seperti Yann AI V15: yannajah.js, handler.js, yannai-cmd.js, settingsbot.js, source/, lib/, library/, plugins/.
 const INCLUDE = ['yannajah.js', 'handler.js', 'yannai-cmd.js', 'settingsbot.js', 'package.json', 'package-lock.json', '.env.example', 'source', 'lib', 'library', 'plugins', 'data', 'assets', 'README.md'];
-const NO_OBFUSCATE = new Set(['settingsbot.js']);
+const OBFUSCATE = ['yannajah.js'];
 const OBF_OPTIONS = {
   compact: true, controlFlowFlattening: false, deadCodeInjection: false, debugProtection: false, selfDefending: false,
   identifierNamesGenerator: 'hexadecimal', renameGlobals: false, stringArray: true, stringArrayThreshold: 0.6,
@@ -59,18 +60,13 @@ if (licenseUrl) {
 let n = 0;
 if (obfuscate) {
   const JavaScriptObfuscator = require('javascript-obfuscator');
-  (function walk(d) {
-    for (const e of fs.readdirSync(d, { withFileTypes: true })) {
-      const p = path.join(d, e.name);
-      if (e.isDirectory()) { if (e.name !== 'data') walk(p); continue; }
-      if (!e.name.endsWith('.js') || NO_OBFUSCATE.has(path.relative(OUT, p))) continue;
-      const code = fs.readFileSync(p, 'utf8');
-      // Alamat website lisensi: semua string dikodekan agar tidak terbaca sebagai teks biasa.
-      const opts = path.relative(OUT, p) === 'yannajah.js' ? { ...OBF_OPTIONS, stringArrayThreshold: 1 } : OBF_OPTIONS;
-      fs.writeFileSync(p, '/* YannAjahNew build */\n' + JavaScriptObfuscator.obfuscate(code, opts).getObfuscatedCode());
-      n++;
-    }
-  })(OUT);
+  for (const rel of OBFUSCATE) {
+    const p = path.join(OUT, rel);
+    // Tautan web database: semua string dikodekan (stringArrayThreshold 1) agar tidak terbaca sebagai teks biasa.
+    const code = fs.readFileSync(p, 'utf8');
+    fs.writeFileSync(p, '/* YannAjahNew build */\n' + JavaScriptObfuscator.obfuscate(code, { ...OBF_OPTIONS, stringArrayThreshold: 1 }).getObfuscatedCode());
+    n++;
+  }
 }
 fs.writeFileSync(path.join(OUT, 'BUILD.txt'), `YannAjahNew dist\nDibuat: ${new Date().toISOString()}\nObfuscated: ${obfuscate ? `${n} file` : 'tidak'}\nWebsite lisensi: ${licenseUrl ? 'tertanam (LICENSE_SERVER_URL di .env tidak dipakai)' : 'dari LICENSE_SERVER_URL (.env)'}\nBackend (server/) TIDAK disertakan: jalankan di server admin terpisah.\n`);
 console.log(`dist/YannAjahNew siap (${obfuscate ? `${n} file diobfuscate` : 'tanpa obfuscation'}${licenseUrl ? ', website lisensi tertanam' : ''})`);

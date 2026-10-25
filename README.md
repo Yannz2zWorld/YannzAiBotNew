@@ -142,7 +142,7 @@ Cara kerjanya sama seperti bot referensi: password bot disimpan di database webs
 - Yang ditanam hanya **alamat website**, bukan URL/password database. Database hanya bisa diakses server website, jadi file bot yang bocor tidak bisa membaca atau mengubah database.
 - Tanpa `--license-url`, dist memakai `LICENSE_SERVER_URL` dari `.env` (untuk tes).
 
-Kode inti bot diobfuscate (`javascript-obfuscator`) sebagai lapisan tambahan: membuat kode sulit dibaca, tapi tidak mustahil direkayasa balik. Keamanan sesungguhnya ada di server (password bcrypt, sesi bisa dicabut, ban dari dashboard). `settingsbot.js`, katalog, dataset, dan migrasi tidak diobfuscate. Build diuji otomatis (dimuat & dijalankan dari folder dist).
+Seperti Yann AI V15, **hanya `yannajah.js`** (entry + tautan web database) yang diobfuscate (`javascript-obfuscator`). `handler.js`, `yannai-cmd.js`, `settingsbot.js`, `source/`, `lib/`, `library/`, dan `plugins/` tetap kode biasa supaya bisa dibaca & diedit. Obfuscation hanya lapisan tambahan; keamanan sesungguhnya ada di server (password bcrypt, sesi bisa dicabut, ban dari dashboard). Build diuji otomatis (dimuat & dijalankan dari folder dist).
 
 ## Backup, restore, pencabutan akses, troubleshooting
 

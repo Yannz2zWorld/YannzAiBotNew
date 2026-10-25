@@ -13,8 +13,10 @@ const DIST = path.join(ROOT, 'dist', 'YannAjahNew');
 test('build dist (obfuscated) bisa dimuat dan dijalankan', { timeout: 300000 }, () => {
   execFileSync(process.execPath, [path.join(ROOT, 'tools', 'build-dist.js'), '--license-url', 'https://lisensi.contoh-bot.id'], { stdio: 'pipe' });
   fs.symlinkSync(path.join(ROOT, 'node_modules'), path.join(DIST, 'node_modules'), 'dir');
-  const yjs = fs.readFileSync(path.join(DIST, 'library', 'yannajah.js'), 'utf8');
-  assert.ok(yjs.startsWith('/* YannAjahNew build */') && /_0x[0-9a-f]+/.test(yjs), 'library/yannajah.js diobfuscate');
+  // Hanya yannajah.js (entry) yang diobfuscate; file lain tetap kode biasa.
+  for (const f of ['handler.js', 'yannai-cmd.js', 'settingsbot.js', 'library/yannajah.js', 'library/license.js', 'plugins/game/snake.js']) {
+    assert.ok(!fs.readFileSync(path.join(DIST, f), 'utf8').startsWith('/* YannAjahNew build */'), `${f} tidak diobfuscate`);
+  }
   assert.ok(fs.readFileSync(path.join(DIST, 'settingsbot.js'), 'utf8').includes("projectName: 'YannAjahNew'"), 'settingsbot.js tetap terbaca');
   assert.ok(!fs.existsSync(path.join(DIST, 'server')), 'backend tidak ikut dist');
   const entry = fs.readFileSync(path.join(DIST, 'yannajah.js'), 'utf8');
