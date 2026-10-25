@@ -112,7 +112,7 @@ test('setreplystyle: owner memilih text/card; card menambah kartu link ke balasa
   await F('setreply').run(x.ctx);
   assert.equal(store.data.settings.replyStyle, 'card');
   const sent = [];
-  const config = { ...require('../../settings.js'), retry: { sendMessage: 0 } };
+  const config = { ...require('../../settingsbot.js'), retry: { sendMessage: 0 } };
   const y = createYannajah({ config, logger: console, store: { data: store.data, markDirty() {} }, license: { isActive: () => true, status: () => ({}) }, api: null, registry: { features: new Map() }, wa: { sock: { sendMessage: async (jid, c) => { sent.push(c); return {}; } } } });
   await y.reply({ chat: '6281@s.whatsapp.net', raw: {} }, 'halo @6289900000000');
   assert.equal(sent[0].contextInfo.externalAdReply.title, config.bot.name);
@@ -128,13 +128,13 @@ test('setreplystyle: owner memilih text/card; card menambah kartu link ke balasa
 test('getfile: daftar tanpa secret/data runtime, kirim file sebagai dokumen, tolak path di luar daftar', async () => {
   const { listFiles, resolveFile } = require('../../lib/getfile');
   const files = listFiles();
-  assert.ok(files.includes('settings.js') && files.includes('YannzAjah-cmd.js') && files.includes('.env.example'));
+  assert.ok(files.includes('settingsbot.js') && files.includes('yannajah-cmd.js') && files.includes('.env.example'));
   assert.ok(!files.some(f => f === '.env' || f.startsWith('node_modules/') || f.startsWith('.git/') || f.startsWith('library/database/') || f.startsWith('session/')));
   for (const bad of ['.env', '../../../etc/passwd', '/etc/passwd', 'node_modules/pg/package.json', 'library/database/database.json', '99999']) assert.equal(resolveFile(bad), null, bad);
-  const x = mockCtx({ feature: F('getfile'), text: 'settings.js', store: freshStore(), isOwner: true });
+  const x = mockCtx({ feature: F('getfile'), text: 'settingsbot.js', store: freshStore(), isOwner: true });
   await F('getfile').run(x.ctx);
   assert.equal(x.files[0].opts.asDocument, true);
-  assert.equal(x.files[0].opts.fileName, 'settings.js');
+  assert.equal(x.files[0].opts.fileName, 'settingsbot.js');
   const l = mockCtx({ feature: F('getfile'), text: 'plugins/owner/getfile', store: freshStore(), isOwner: true });
   await F('getfile').run(l.ctx);
   assert.match(l.replies[0], /plugins\/owner\/getfile\.js[\s\S]*plugins\/owner\/getfiledest\.js/);

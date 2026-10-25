@@ -14,7 +14,7 @@ const { validate, loadConfig } = require('../../library/config-loader');
 const DataBase = require('../../source/database');
 
 const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), 'yan-core-'));
-const pairingCfg = dir => ({ ...require('../../settings.js').pairing, sessionDir: dir, reconnect: { maxAttempts: 2, baseDelayMs: 5, maxDelayMs: 10 } });
+const pairingCfg = dir => ({ ...require('../../settingsbot.js').pairing, sessionDir: dir, reconnect: { maxAttempts: 2, baseDelayMs: 5, maxDelayMs: 10 } });
 
 test('SessionLock: proses lain yang masih hidup memblokir; lock basi diambil alih', () => {
   const dir = tmp();
@@ -100,7 +100,7 @@ test('yannajah.sendmessage: urut per chat, retry terbatas, ditolak saat lisensi 
   const sent = [];
   let failOnce = true, active = true;
   const sock = { sendMessage: async (jid, msg) => { if (failOnce && msg.text === 'retry') { failOnce = false; throw new Error('sementara'); } sent.push([jid, msg]); return { key: { id: String(sent.length) } }; } };
-  const config = { ...require('../../settings.js'), retry: { sendMessage: 1 } };
+  const config = { ...require('../../settingsbot.js'), retry: { sendMessage: 1 } };
   const y = createYannajah({ config, logger: console, store: { data: DataBase.DEFAULTS(), markDirty() {} }, license: { isActive: () => active, status: () => ({}) }, api: null, registry: { features: new Map() }, wa: { sock } });
   const jid = '6281@s.whatsapp.net';
   await Promise.all(['a', 'b', 'retry', 'c'].map(x => y.sendmessage(jid, x)));

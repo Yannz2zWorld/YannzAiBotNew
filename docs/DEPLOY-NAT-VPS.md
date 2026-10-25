@@ -112,7 +112,7 @@ Darurat (lupa password): `node server/cli.js set-password --username yann` di se
    Tautkan perangkat → **Tautkan dengan nomor telepon** → masukkan kode. Setelah "WhatsApp terhubung", Ctrl+C.
 3. Jalankan permanen (token tersimpan, tidak minta password lagi):
    ```bash
-   pm2 start index.js --name yannajah-bot --stop-exit-codes 78 --exp-backoff-restart-delay=5000
+   pm2 start yannajah.js --name yannajah-bot --stop-exit-codes 78 --exp-backoff-restart-delay=5000
    pm2 save
    ```
    Exit code 78 = ditolak lisensi / perlu pairing ulang → pm2 tidak restart terus-menerus.

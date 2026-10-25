@@ -1,10 +1,10 @@
 'use strict';
 // Event WhatsApp (seperti handler.js V15). Alur pesan:
-//   messages.upsert -> source/message.js (serializer jadi `m`) -> YannzAjah-cmd.js (router) -> plugins/**
+//   messages.upsert -> source/message.js (serializer jadi `m`) -> yannajah-cmd.js (router) -> plugins/**
 // Event grup: welcome / left (teks per grup, lib/welcome.js). Semuanya mati kalau lisensi terkunci.
 
 const { serialize } = require('./source/message');
-const { createRouter } = require('./YannzAjah-cmd');
+const { createRouter } = require('./yannajah-cmd');
 const { render, DEFAULT_WELCOME, DEFAULT_LEFT } = require('./lib/welcome');
 
 function createGroupHandler(yannajah, { logger }) {
@@ -25,7 +25,7 @@ function createGroupHandler(yannajah, { logger }) {
   };
 }
 
-// Pasang semua event pesan & grup ke koneksi WhatsApp. Dipanggil sekali oleh index.js.
+// Pasang semua event pesan & grup ke koneksi WhatsApp. Dipanggil sekali oleh yannajah.js.
 function initializerHandler(yannajah, { config, logger, wa, store, license, B }) {
   const route = createRouter(yannajah, { config, logger: logger.child('router') });
   const groupMetadata = jid => wa.groupCache.get(jid) ? Promise.resolve(wa.groupCache.get(jid)) : wa.sock.groupMetadata(jid).then(md => { wa.groupCache.set(jid, md); return md; });

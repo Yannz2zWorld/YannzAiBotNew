@@ -1,5 +1,5 @@
 'use strict';
-// Memuat .env (kalau ada), lalu settings.js, lalu memvalidasi isinya.
+// Memuat .env (kalau ada), lalu settingsbot.js, lalu memvalidasi isinya.
 // Error validasi tidak pernah mencetak nilai secret — hanya nama field-nya.
 
 const fs = require('fs');
@@ -40,7 +40,7 @@ const isLocalUrl = v => { try { const h = new URL(v).hostname; return h === 'loc
 function validate(cfg) {
   const p = [];
   const need = (cond, msg) => { if (!cond) p.push(msg); };
-  need(isObj(cfg), 'settings.js harus mengekspor object');
+  need(isObj(cfg), 'settingsbot.js harus mengekspor object');
   if (!isObj(cfg)) throw new ConfigError(p);
 
   need(isObj(cfg.bot) && typeof cfg.bot.name === 'string' && cfg.bot.name.trim(), 'bot.name wajib diisi');
@@ -93,7 +93,7 @@ let cached = null;
 function loadConfig({ reload = false, envFile } = {}) {
   if (cached && !reload) return cached;
   loadDotEnv(envFile);
-  const file = require.resolve(path.join(ROOT, 'settings.js'));
+  const file = require.resolve(path.join(ROOT, 'settingsbot.js'));
   if (reload) delete require.cache[file];
   cached = validate(require(file));
   return cached;

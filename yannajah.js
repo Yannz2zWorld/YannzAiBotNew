@@ -1,9 +1,9 @@
 'use strict';
 /*
  * YannAjahNew — entry point bot.
- *   node index.js                 (metode pairing sesuai settings.js, default: tanya)
- *   node index.js --qr            (paksa QR)
- *   node index.js --pairing-code  (paksa pairing code nomor telepon)
+ *   node yannajah.js                 (metode pairing sesuai settingsbot.js, default: tanya)
+ *   node yannajah.js --qr            (paksa QR)
+ *   node yannajah.js --pairing-code  (paksa pairing code nomor telepon)
  *
  * Urutan start:
  *   banner -> validasi konfigurasi -> verifikasi/login ke server lisensi pusat (nomor bot + password bot)
@@ -12,6 +12,11 @@
  *   -> heartbeat lisensi (ban/disable/maintenance dari dashboard langsung berlaku).
  * Exit code 78 = ditolak server lisensi / konfigurasi salah (process manager sebaiknya TIDAK restart otomatis).
  */
+
+// Tautan web database (website lisensi pusat). Kosong = development (LICENSE_SERVER_URL di .env).
+// `npm run build:dist -- --license-url https://...` mengisi baris ini lalu file ini diobfuscate penuh.
+const WEB_DATABASE = null;
+require('./library/license-endpoint').lock(WEB_DATABASE);
 
 const path = require('path');
 const readline = require('readline');
@@ -198,7 +203,11 @@ async function main() {
   await wa.start(options);
 }
 
-main().catch(e => {
-  console.error(chalk.red(`✖ Gagal start: ${e.userMessage || e.message}`));
-  process.exit(e.code === 'SESSION_IN_USE' || e.code === 'LICENSE_LOCKED' ? EXIT_DENIED : 1);
-});
+if (require.main === module) {
+  main().catch(e => {
+    console.error(chalk.red(`✖ Gagal start: ${e.userMessage || e.message}`));
+    process.exit(e.code === 'SESSION_IN_USE' || e.code === 'LICENSE_LOCKED' ? EXIT_DENIED : 1);
+  });
+}
+
+module.exports = { main };

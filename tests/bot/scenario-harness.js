@@ -4,12 +4,12 @@
 const { UsageError } = require('../../library/errors');
 const { createDatabaseFacade } = require('../../library/yannajah');
 const { loadRegistry, freshStore } = require('./feature-harness');
-const { HOOK_ORDER } = require('../../YannzAjah-cmd');
+const { HOOK_ORDER } = require('../../yannajah-cmd');
 
 const GROUP = '120363000000000001@g.us';
 const OWNER = '6281200000001@s.whatsapp.net';
 
-function createScenario({ registry = loadRegistry().registry, config = require('../../settings.js') } = {}) {
+function createScenario({ registry = loadRegistry().registry, config = require('../../settingsbot.js') } = {}) {
   const store = freshStore();
   const db = createDatabaseFacade(store, { dailyLimit: 10, timezone: config.bot.timezone });
   const sent = [];

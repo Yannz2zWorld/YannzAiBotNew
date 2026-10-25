@@ -1,12 +1,12 @@
 'use strict';
-// Router command (YannzAjah-cmd.js) dengan registry asli dan WhatsApp tiruan: kunci lisensi (ban/disable),
+// Router command (yannajah-cmd.js) dengan registry asli dan WhatsApp tiruan: kunci lisensi (ban/disable),
 // maintenance, permission, scope, status fitur, limit, cooldown, error, hook.
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { createRouter } = require('../../YannzAjah-cmd');
+const { createRouter } = require('../../yannajah-cmd');
 const { createDatabaseFacade } = require('../../library/yannajah');
 const { loadRegistry, freshStore } = require('./feature-harness');
-const baseConfig = require('../../settings.js');
+const baseConfig = require('../../settingsbot.js');
 
 const OWNER = `${baseConfig.owner.number}@s.whatsapp.net`;
 const USER = '6281299990001@s.whatsapp.net';

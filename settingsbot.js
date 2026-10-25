@@ -1,5 +1,5 @@
 /*
- * YannAjahNew — settings.js
+ * YannAjahNew — settingsbot.js
  * Konfigurasi utama bot (seperti settings.js Yann AI V15 Fixed), dirapikan per kelompok.
  *
  * ATURAN SECRET: API key, token, password, dan URL backend produksi TIDAK ditulis di file ini.
@@ -95,7 +95,7 @@ module.exports = {
   // ------------------------------------------------------------------ autentikasi lisensi pusat
   license: {
     // URL website lisensi (server/). Wajib HTTPS kecuali localhost untuk development.
-    // Di build distribusi dengan --license-url, alamat tertanam di library/license-endpoint.js dipakai.
+    // Di build distribusi dengan --license-url, alamat yang tertanam di yannajah.js dipakai.
     serverUrl: (e => (e.locked && e.url ? e.url : env('LICENSE_SERVER_URL', 'http://127.0.0.1:8787')))(require('./library/license-endpoint')),
     instanceName: env('BOT_INSTANCE_NAME', 'yannajah-main'),
     tokenFile: env('LICENSE_TOKEN_FILE', 'library/database/license-session.json'),

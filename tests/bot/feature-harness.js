@@ -21,7 +21,7 @@ function mockCtx({ feature, text = '', store, api = null, quoted = null, media =
   const m = { chat: isGroup ? '120363000000000001@g.us' : '6281200000001@s.whatsapp.net', sender: '6281200000001@s.whatsapp.net', senderNumber: '6281200000001', isGroup, command: feature.name, prefix: '.', args: text ? text.split(/\s+/) : [], text, quoted, pushName: 'Tester', key: { id: 'TEST' }, getMedia: () => media, mentionedJid: [], ...extra.m };
   const ctx = {
     m, feature, command: feature.name, args: m.args, text, prefix: '.', isOwner, isPremium: isOwner, isAdmin: false, isBotAdmin: false,
-    db, api, user: db.user(m.sender), group: isGroup ? db.group(m.chat) : null, config: require('../../settings.js'), logger: { info() {}, warn() {}, error() {}, debug() {} },
+    db, api, user: db.user(m.sender), group: isGroup ? db.group(m.chat) : null, config: require('../../settingsbot.js'), logger: { info() {}, warn() {}, error() {}, debug() {} },
     yannajah: { database: db, api, registry: extra.registry, socket: extra.socket || null, health: () => ({}) },
     reply: async c => { replies.push(typeof c === 'string' ? c : c?.text ?? c); },
     react: async () => {},

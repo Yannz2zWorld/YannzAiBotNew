@@ -119,7 +119,7 @@ class Registry {
         if (!ent.name.endsWith('.js') || ent.name.startsWith('_')) continue;
         if (full.includes(`${path.sep}external${path.sep}`)) {
           const hash = require('crypto').createHash('sha256').update(fs.readFileSync(full)).digest('hex');
-          if (trustedExternal[ent.name] !== hash) { this.loadErrors.push({ file: full, problems: ['plugin external tidak dipercaya (hash tidak cocok di settings.js plugin.trustedExternal)'] }); continue; }
+          if (trustedExternal[ent.name] !== hash) { this.loadErrors.push({ file: full, problems: ['plugin external tidak dipercaya (hash tidak cocok di settingsbot.js plugin.trustedExternal)'] }); continue; }
         }
         try { n += this.loadFile(full).length; }
         catch (e) { this.loadErrors.push({ file: path.relative(path.join(__dirname, '..'), full), problems: [e.message] }); this.logger?.error(`Plugin gagal dimuat: ${ent.name}`, e.message); }

@@ -77,9 +77,9 @@ Urutan: banner **YANNZAJAH** → validasi konfigurasi → login ke server lisens
 
 Pairing code memakai `sock.requestPairingCode(nomor, kode8)` dan QR memakai event `connection.update` — keduanya diverifikasi ada di `@whiskeysockets/baileys@7.0.0-rc14` yang terpasang. Tautkan di WhatsApp: *Perangkat tertaut → Tautkan perangkat* (QR) atau *Tautkan dengan nomor telepon* (kode). QR/kode hanya tampil di terminal, tidak ditulis ke log.
 
-## `settings.js` & environment
+## `settingsbot.js` & environment
 
-`settings.js` berisi konfigurasi non-rahasia (dikelompokkan: bot, owner, prefix, chat, logger, pairing, license, database, api, plugin, media, limit, permission, cache, concurrency, retry, timeout, dashboard, harga/sewa, links, image, mess) dengan nilai yang diambil dari settings Yann AI V15. Semua secret (API key, password DB, OAuth secret, session secret, backup key) **hanya** dari environment — lihat [.env.example](.env.example). Konfigurasi divalidasi saat start; error tidak mencetak nilai secret.
+`settingsbot.js` berisi konfigurasi non-rahasia (dikelompokkan: bot, owner, prefix, chat, logger, pairing, license, database, api, plugin, media, limit, permission, cache, concurrency, retry, timeout, dashboard, harga/sewa, links, image, mess) dengan nilai yang diambil dari settings Yann AI V15. Semua secret (API key, password DB, OAuth secret, session secret, backup key) **hanya** dari environment — lihat [.env.example](.env.example). Konfigurasi divalidasi saat start; error tidak mencetak nilai secret.
 
 ## Namespace `yannajah`
 
@@ -137,12 +137,12 @@ npm run build:dist -- --license-url https://lisensi.domainkamu.com   # dist/Yann
 ```
 Cara kerjanya sama seperti bot referensi: password bot disimpan di database website, bot hasil build menyambung ke website itu, dan alamatnya tertanam di kode yang diobfuscate.
 
-- `--license-url` menanam alamat website lisensi di `library/license-endpoint.js` (string dikodekan penuh). Bot hasil build **selalu** login ke website itu; `LICENSE_SERVER_URL` di `.env` dan `settings.js` tidak bisa mengarahkannya ke server lain.
+- `--license-url` menanam tautan web database di `WEB_DATABASE` pada `yannajah.js` (file entry diobfuscate penuh, string dikodekan). Bot hasil build **selalu** login ke website itu; `LICENSE_SERVER_URL` di `.env` dan `settingsbot.js` tidak bisa mengarahkannya ke server lain.
 - Pembeli/pemakai cukup menjalankan bot lalu memasukkan **nomor bot + password bot** yang Anda buat di dashboard. Tambah/hapus nomor, ganti password, ban, dan maintenance diatur dari website.
 - Yang ditanam hanya **alamat website**, bukan URL/password database. Database hanya bisa diakses server website, jadi file bot yang bocor tidak bisa membaca atau mengubah database.
 - Tanpa `--license-url`, dist memakai `LICENSE_SERVER_URL` dari `.env` (untuk tes).
 
-Kode inti bot diobfuscate (`javascript-obfuscator`) sebagai lapisan tambahan: membuat kode sulit dibaca, tapi tidak mustahil direkayasa balik. Keamanan sesungguhnya ada di server (password bcrypt, sesi bisa dicabut, ban dari dashboard). `settings.js`, katalog, dataset, dan migrasi tidak diobfuscate. Build diuji otomatis (dimuat & dijalankan dari folder dist).
+Kode inti bot diobfuscate (`javascript-obfuscator`) sebagai lapisan tambahan: membuat kode sulit dibaca, tapi tidak mustahil direkayasa balik. Keamanan sesungguhnya ada di server (password bcrypt, sesi bisa dicabut, ban dari dashboard). `settingsbot.js`, katalog, dataset, dan migrasi tidak diobfuscate. Build diuji otomatis (dimuat & dijalankan dari folder dist).
 
 ## Backup, restore, pencabutan akses, troubleshooting
 
@@ -154,13 +154,16 @@ Mengikuti struktur Yann AI V15 / Lena AI (kode ditulis ulang & dirapikan, alur s
 
 ```
 YannzAiBotNew/
-├── index.js            entry bot: banner, lisensi, database, plugin, koneksi WhatsApp
 ├── handler.js          event WhatsApp: pesan masuk & welcome/left grup
-├── YannzAjah-cmd.js    router command (urutan cek: lisensi, maintenance, izin, limit, cooldown, …)
-├── settings.js         konfigurasi bot (non-rahasia; secret dari .env)
+├── yannajah.js         entry bot (diobfuscate saat build, berisi tautan web database):
+│                       banner, lisensi, database, plugin, koneksi WhatsApp
+├── yannajah-cmd.js     router command (urutan cek: lisensi, maintenance, izin, limit, cooldown, …)
+├── package.json
+├── README.md
+├── settingsbot.js      konfigurasi bot (non-rahasia; secret dari .env)
 ├── source/
 │   ├── message.js      serializer pesan (objek `m`, LID → nomor)
-│   ├── menu-yannai.js  menu dibangun dari registry fitur
+│   ├── yannajah-menu.js  isi menu bot, dibangun dari registry fitur
 │   └── database.js     database JSON lokal (atomik + .bak)
 ├── lib/                logika bersama fitur: game.js, tebak.js, economy.js, welcome.js, store.js, …
 ├── library/            inti: yannajah.js (namespace), config-loader, connection, license, registry,
@@ -176,4 +179,4 @@ YannzAiBotNew/
 └── docs/
 ```
 
-Alur pesan: `index.js` → `handler.js` → `source/message.js` → `YannzAjah-cmd.js` → `plugins/<kategori>/<command>.js` (logika bersama di `lib/`).
+Alur pesan: `yannajah.js` → `handler.js` → `source/message.js` → `yannajah-cmd.js` → `plugins/<kategori>/<command>.js` (logika bersama di `lib/`).

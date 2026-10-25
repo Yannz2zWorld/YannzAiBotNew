@@ -40,7 +40,7 @@ class LicenseClient extends EventEmitter {
     this.cfg = cfg;
     this.logger = logger;
     this.transport = transport;
-    // Build distribusi: alamat website tertanam (library/license-endpoint.js) selalu menang.
+    // Build distribusi: alamat website tertanam di yannajah.js (lewat library/license-endpoint.js) selalu menang.
     const endpoint = require('./license-endpoint');
     const url = endpoint.locked && endpoint.url ? endpoint.url : cfg.serverUrl;
     this.base = new URL(url).origin;

@@ -18,7 +18,7 @@ Semua angka di bawah berasal dari run nyata di container pengembangan (Node 22.2
 | 865 fitur berfungsi (381 lokal + 484 APIZ2Z); 722 lulus uji otomatis | `tests/bot/features.test.js` (187 unit), `media-features.test.js` (51 ffmpeg/Jimp nyata), `apiz2z.test.js` (484 command mock + 12 test klien) |
 | Klien APIZ2Z: hanya endpoint terverifikasi, Bearer header, allowlist host, anti-SSRF, timeout, retry terbatas, rate limit, cache, batas ukuran, parsing sesuai Content-Type | `apiz2z.test.js` |
 | Build distribusi + obfuscation (bot saja) | `tests/bot/dist.test.js`: dist dimuat & dijalankan dari foldernya sendiri |
-| `index.js` start nyata | dijalankan terhadap backend lokal: banner → login lisensi non-interaktif → 1.933 entri registry → percobaan koneksi WhatsApp → reconnect terbatas → shutdown rapi; restart kedua memakai token tersimpan tanpa password; file token mode 600 |
+| `yannajah.js` start nyata | dijalankan terhadap backend lokal: banner → login lisensi non-interaktif → 1.933 entri registry → percobaan koneksi WhatsApp → reconnect terbatas → shutdown rapi; restart kedua memakai token tersimpan tanpa password; file token mode 600 |
 | Fitur Lena AI yang tidak ada di V15: upscaler 2x/4x, igquote, yannedit, sticker.ly cari + kirim pack, reply style text/card, getfile (owner, tanpa secret), cektrx | `tests/bot/lena-features.test.js` (APIZ2Z lewat transport tiruan: parameter, endpoint cadangan, error kuota tanpa cadangan, daftar file tanpa `.env`/session/database) |
 
 **Total test: 858 lulus, 0 gagal, 0 dilewati** (`TEST_DATABASE_URL=… npm test`). Syntax check: 741/741 file.
@@ -53,7 +53,7 @@ Semua angka di bawah berasal dari run nyata di container pengembangan (Node 22.2
 
 - Proyek berdiri sendiri di repo `YannzAiBotNew` (dulu dikembangkan di folder `api-docs/YannAjahNew`; platform APIZ2Z **tidak diubah**).
 - Migrasi: `server/migrations/001_core.sql`, `server/migrations/002_ranks_permissions.sql`.
-- Kode (struktur seperti Yann AI V15): `index.js`, `handler.js`, `YannzAjah-cmd.js`, `settings.js`, `source/*` (message, menu-yannai, database), `lib/*` (logika bersama fitur), `library/*` (yannajah, config-loader, logger, errors, function, net, apiz2z, apiz2z-render, license, connection, registry, plugin-kit, converter, exif, mathexpr, banner), `plugins/<kategori>/<command>.js` (611 file, 1 file = 1 command + generator APIZ2Z + backlog V15), `server/**` (app, index, cli, config, lib, services, routes, public), `tools/*`, `tests/**`, `data/**`, `docs/**`, `.env.example`.
+- Kode (struktur seperti Yann AI V15): `yannajah.js`, `handler.js`, `yannajah-cmd.js`, `settingsbot.js`, `source/*` (message, yannajah-menu, database), `lib/*` (logika bersama fitur), `library/*` (yannajah, config-loader, logger, errors, function, net, apiz2z, apiz2z-render, license, connection, registry, plugin-kit, converter, exif, mathexpr, banner), `plugins/<kategori>/<command>.js` (611 file, 1 file = 1 command + generator APIZ2Z + backlog V15), `server/**` (app, index, cli, config, lib, services, routes, public), `tools/*`, `tests/**`, `data/**`, `docs/**`, `.env.example`.
 
 ## Risiko / catatan terbuka
 

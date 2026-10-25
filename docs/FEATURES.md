@@ -571,7 +571,7 @@ Dibuat: 2026-10-25T01:28:02.952Z
 | .threshold |  | image | Efek gambar: Hitam-putih tegas (threshold): .threshold [0-255] | user |  |  | tested | 1/1 real |
 | .cuaca | cekcuaca | info | Cuaca BMKG: Info cuaca dari BMKG. | user | area | APIZ2Z /api/info/cuaca/v1 | tested | 1/1 mock |
 | .cuacav2 |  | info | Cuaca Dunia: Cuaca kota di seluruh dunia. | user | kota*, days | APIZ2Z /api/info/cuaca/v2 | tested | 1/1 mock |
-| .donate | donasi | info | Info donasi (QRIS dari settings.js) | user |  |  | implemented |  |
+| .donate | donasi | info | Info donasi (QRIS dari settingsbot.js) | user |  |  | implemented |  |
 | .error |  | info | Report Error ke owner bot | user |  |  | implemented |  |
 | .gempa | infogempa, cekgempa | info | Info Gempa: Info gempa terbaru dari BMKG. | user | type | APIZ2Z /api/info/gempa | tested | 1/1 mock |
 | .gempa2 |  | info | Info Gempa v2: Info gempa terbaru dari BMKG. | user |  | APIZ2Z /api/info/gempa-v2 | tested | 1/1 mock |
@@ -808,7 +808,7 @@ Dibuat: 2026-10-25T01:28:02.952Z
 | .setmoney |  | owner | Atur koin user | owner |  |  | implemented |  |
 | .setppbot |  | owner | Ganti foto profil bot (reply/kirim gambar) | owner |  |  | implemented |  |
 | .setpppanjang | setpppanjangbot, setppfull, setbotpp | owner | Ganti foto profil bot tanpa crop persegi (reply gambar) | owner |  |  | implemented |  |
-| .setprefix |  | owner | Atur prefix (pisah spasi, 1-3 karakter). Kosong = kembali ke settings.js | owner |  |  | implemented |  |
+| .setprefix |  | owner | Atur prefix (pisah spasi, 1-3 karakter). Kosong = kembali ke settingsbot.js | owner |  |  | implemented |  |
 | .setreplystyle | setreply | owner | Gaya balasan bot: text (biasa) atau card (kartu link) | owner |  |  | implemented |  |
 | .setrestart | autorestart | owner | Restart otomatis tiap N jam (0 = mati) | owner |  |  | implemented |  |
 | .sistemsewa |  | owner | Sistem sewa: bot hanya melayani grup yang sewa | owner |  |  | implemented |  |

@@ -58,10 +58,10 @@ node server/cli.js bootstrap-developer --username kamu --email kamu@gmail.com
 
 # 4. Proses (pm2). Bot exit code 78 = ditolak lisensi/config: jangan restart terus-menerus.
 pm2 start server/index.js --name yannajah-dashboard
-pm2 start index.js --name yannajah-bot --stop-exit-codes 78 --exp-backoff-restart-delay=5000
+pm2 start yannajah.js --name yannajah-bot --stop-exit-codes 78 --exp-backoff-restart-delay=5000
 pm2 save && pm2 startup
 ```
-Login bot pertama kali dilakukan interaktif (`node index.js`, isi nomor bot + password bot, scan QR / masukkan pairing code), lalu hentikan dan jalankan lewat pm2 — token tersimpan, tidak perlu password lagi selama sesi sah.
+Login bot pertama kali dilakukan interaktif (`node yannajah.js`, isi nomor bot + password bot, scan QR / masukkan pairing code), lalu hentikan dan jalankan lewat pm2 — token tersimpan, tidak perlu password lagi selama sesi sah.
 
 **Nginx (HTTPS)**: reverse proxy `https://lisensi.domainkamu.com` → `127.0.0.1:8787`, sertifikat dari Let's Encrypt (`certbot --nginx`). Set `DASHBOARD_TRUST_PROXY=true`, `DASHBOARD_PUBLIC_URL=https://…`, `NODE_ENV=production` (server menolak start tanpa `SESSION_SECRET` ≥ 32 karakter dan URL https).
 

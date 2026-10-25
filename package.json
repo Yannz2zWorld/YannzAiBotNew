@@ -2,16 +2,16 @@
   "name": "yannajahnew",
   "version": "1.0.0",
   "description": "YannAjahNew - WhatsApp bot modular dengan namespace yannajah, auth lisensi pusat, dan integrasi APIZ2Z",
-  "main": "index.js",
+  "main": "yannajah.js",
   "type": "commonjs",
   "private": true,
   "engines": {
     "node": ">=20.0.0"
   },
   "scripts": {
-    "start": "node index.js",
-    "start:qr": "node index.js --qr",
-    "start:pairing": "node index.js --pairing-code",
+    "start": "node yannajah.js",
+    "start:qr": "node yannajah.js --qr",
+    "start:pairing": "node yannajah.js --pairing-code",
     "dashboard": "node server/index.js",
     "migrate": "node server/cli.js migrate",
     "admin:bootstrap": "node server/cli.js bootstrap-developer",
