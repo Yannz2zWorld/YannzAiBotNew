@@ -17,7 +17,7 @@ test('build dist (obfuscated) bisa dimuat dan dijalankan', { timeout: 300000 }, 
   for (const f of ['handler.js', 'yannai-cmd.js', 'settingsbot.js', 'library/yannajah.js', 'library/license.js', 'plugins/game/snake.js']) {
     assert.ok(!fs.readFileSync(path.join(DIST, f), 'utf8').startsWith('/* YannAjahNew build */'), `${f} tidak diobfuscate`);
   }
-  assert.ok(fs.readFileSync(path.join(DIST, 'settingsbot.js'), 'utf8').includes("projectName: 'YannAjahNew'"), 'settingsbot.js tetap terbaca');
+  assert.ok(fs.readFileSync(path.join(DIST, 'settingsbot.js'), 'utf8').includes('global.botname'), 'settingsbot.js tetap terbaca');
   assert.ok(!fs.existsSync(path.join(DIST, 'server')), 'backend tidak ikut dist');
   const entry = fs.readFileSync(path.join(DIST, 'yannajah.js'), 'utf8');
   assert.ok(entry.startsWith('/* YannAjahNew build */') && !entry.includes('contoh-bot'), 'yannajah.js diobfuscate; tautan web database tertanam & tidak terbaca sebagai teks biasa');

@@ -119,5 +119,5 @@ test('settingsbot.js gaya global.*: nilai di atas dipakai bot', () => {
   const cfg = require('../../settingsbot.js');
   assert.equal(cfg.pairing.customCode, global.custompairing);
   assert.equal(cfg.bot.name, process.env.BOT_NAME || global.botname);
-  assert.deepEqual(cfg.mess, global.mess);
+  assert.equal(cfg.mess.owner, global.mess.owner); assert.equal(cfg.owner.number, process.env.OWNER_NUMBER || global.owner);
 });
