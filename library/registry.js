@@ -89,8 +89,9 @@ class Registry {
       description: fn.description || fn.help || `Plugin legacy ${path.basename(file)}`,
       permission: fn.owner ? 'owner' : fn.admin ? 'admin' : fn.premium ? 'premium' : 'user',
       scope: fn.group ? 'group' : fn.private ? 'private' : 'all', status: 'implemented', source: 'legacy',
+      usage: fn.usage || '', limit: fn.limit === true ? 1 : Number(fn.limit) || 0, cooldown: Number(fn.cooldown) || 2,
       params: [], dependencies: {}, legacy: true,
-      run: ctx => fn(ctx.m, ctx.legacyContext())
+      run: ctx => { if (!ctx.m.reply) ctx.m.reply = t => ctx.reply(t); return fn(ctx.m, ctx.legacyContext()); }
     };
   }
 

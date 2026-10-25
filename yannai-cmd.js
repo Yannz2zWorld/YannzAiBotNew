@@ -30,6 +30,14 @@ function createRouter(yannajah, { config, logger }) {
     .filter(f => typeof f.onMessage === 'function' && registry.effectiveStatus(f, { apiKey: api?.hasKey?.() }) !== 'disabled')
     .sort((a, b) => hookRank(a) - hookRank(b));
 
+  // Helper global gaya Yann AI V15 / Lena AI untuk plugin format handler.command.
+  Object.assign(global, {
+    isRegistered: jid => Boolean(db.user(jid).registered) || !(db.settings().registerRequired ?? config.permission.registerRequired),
+    isPrem: jid => db.isPremium(jid),
+    checkLimit: (jid, prem, creator) => !prem && !creator && db.user(jid).limit <= 0,
+    addLimit: (jid, prem, creator) => { if (prem || creator) return; const u = db.user(jid); u.limit = Math.max(0, u.limit - 1); db.touch(); }
+  });
+
   const ownerNumbers = () => new Set([config.owner.number, ...config.owner.extra, ...(db.raw().owners || [])].map(String));
   const isOwnerOf = m => m.fromMe || ownerNumbers().has(jidUser(m.sender));
 
@@ -49,7 +57,7 @@ function createRouter(yannajah, { config, logger }) {
       media: () => m.getMedia?.() || null,
       // Kompatibilitas plugin base/V15: handler(m, { conn, alip, clutch, Reply, isCreator, text, command, example, ... })
       legacyContext: () => ({
-        conn: yannajah.socket, alip: yannajah.socket, clutch: yannajah.socket, yannajah,
+        conn: yannajah.socket, sock: yannajah.socket, lena: yannajah.socket, alip: yannajah.socket, clutch: yannajah.socket, yannajah,
         Reply: t => yannajah.reply(m, t), reply: t => yannajah.reply(m, t), isCreator: flags.isOwner, isOwner: flags.isOwner,
         isPremium: flags.isPremium, text: m.text, q: m.text, args: m.args, command: m.command, prefix: m.prefix,
         example: t => `\n*Contoh:* ${m.prefix}${m.command} ${t}\n`, mess, isCmd: true, botNumber: yannajah.socket?.user?.id

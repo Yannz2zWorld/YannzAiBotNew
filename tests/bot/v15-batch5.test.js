@@ -101,3 +101,23 @@ test('jadwal kirim & pengingat sholat: parser', () => {
   assert.deepEqual(extractTimes({ data: [{ tanggal: '2026-10-25', Fajr: '04:05 (WIB)', Dhuhr: '11:41', Asr: '14:56', Maghrib: '17:50', Isha: '19:01' }] }, '2026-10-25'),
     { subuh: '04:05', dzuhur: '11:41', ashar: '14:56', maghrib: '17:50', isya: '19:01' });
 });
+
+test('plugin format Lena/V15 (handler.command) dari plugins/contoh jalan', async () => {
+  const f = F('hai');
+  assert.equal(f.id, 'legacy.halo'); assert.equal(f.category, 'contoh'); assert.equal(f.usage, '<nama>');
+  const sent = [];
+  const sock = { sendMessage: async (jid, c) => sent.push(c) };
+  const m = { chat: '628@s.whatsapp.net', key: { id: 'X' } };
+  const replies = [];
+  const ctx = { m, reply: async t => replies.push(t), legacyContext: () => ({ sock, text: 'Budi', command: 'hai', prefix: '.', isCreator: false, Reply: async t => replies.push(t) }) };
+  await f.run(ctx);
+  assert.match(replies[0], /Halo Budi/); assert.ok(sent[0].react);
+  assert.equal(typeof m.reply, 'function');
+});
+
+test('settingsbot.js gaya global.*: nilai di atas dipakai bot', () => {
+  const cfg = require('../../settingsbot.js');
+  assert.equal(cfg.pairing.customCode, global.custompairing);
+  assert.equal(cfg.bot.name, process.env.BOT_NAME || global.botname);
+  assert.deepEqual(cfg.mess, global.mess);
+});
