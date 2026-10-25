@@ -14,7 +14,7 @@
   ┌──────────────────────────────────── proses bot (satu proses = satu nomor WhatsApp) ───────────────────────────┐
   │ yannajah.js ── library/license.js (yannajah.auth) ── fail-closed, token 0600, lease instance                       │
   │    │        library/connection.js (Baileys 7: QR / pairing code, lock session, reconnect terkendali)            │
-  │    │        handler.js → source/message.js (serializer) → yannajah-cmd.js (router) → plugins/<kat>/<cmd>.js │
+  │    │        handler.js → source/message.js (serializer) → yannai-cmd.js (router) → plugins/<kat>/<cmd>.js │
   │    │        library/yannajah.js (namespace + facade database lokal) ── source/database.js (JSON atomik)        │
   │    └──────  library/apiz2z.js (yannajah.api) ──HTTPS(Bearer)──▶ apiz2z.web.id (hanya endpoint terverifikasi)   │
   └────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
@@ -27,12 +27,12 @@
 | Konfigurasi | `settingsbot.js`, `library/config-loader.js`, `server/config.js` |
 | Core engine & koneksi WhatsApp | `yannajah.js`, `library/connection.js` |
 | Autentikasi & pairing | `library/license.js` (bot), `server/services/botAuthService.js`, `server/routes/auth.js` |
-| Router command, event | `yannajah-cmd.js`, `handler.js`, `source/message.js` |
+| Router command, event | `yannai-cmd.js`, `handler.js`, `source/message.js` |
 | Plugin manager & feature registry | `library/registry.js`, `library/plugin-kit.js`, `plugins/<kategori>/<command>.js` (1 file = 1 command), logika bersama di `lib/` |
 | Database adapter | `library/yannajah.js` (facade), `source/database.js`; pusat: `server/lib/db.js` |
 | API integration | `library/apiz2z.js`, `library/apiz2z-render.js`, `library/catalog/*.json` |
 | Media | `library/converter.js` (ffmpeg spawn), `library/exif.js` (metadata stiker) |
-| Permission | bot: `yannajah-cmd.js`; pusat: `server/services/accessControl.js` |
+| Permission | bot: `yannai-cmd.js`; pusat: `server/services/accessControl.js` |
 | Logger & error | `library/logger.js` (redaksi otomatis), `library/errors.js`, `server/lib/errors.js` |
 | Validasi | `server/lib/validate.js`, `library/apiz2z.js#validateParams` |
 | Session | `library/connection.js` (lock + persist), `server/services/sessionService.js` |
@@ -46,7 +46,7 @@
 **Ban / disable / sesi dicabut di dashboard.** Transaksi: ubah status + cabut `bot_sessions` + audit → heartbeat bot berikutnya dapat `401 SESSION_REVOKED` → `license` membuang token dan memancarkan `locked` → `wa.stop()`; `handleClose` tidak reconnect selama lisensi terkunci → router tidak menjalankan fitur apa pun. Login ulang ditolak `BOT_BANNED` sampai di-unban. Bila server lisensi tidak terjangkau lebih lama dari `offlineGraceMinutes` (default 0) bot juga terkunci (tidak ada akses penuh secara default).
 
 **Maintenance.** Tiga lapis, semuanya hanya DEVELOPER, prioritas web > bot > global.
-- *Web database* (`PUT /api/dash/maintenance/web`, migrasi 008): semua route dashboard & login menolak non-DEVELOPER dengan `503 WEB_MAINTENANCE`; state bot `maintenance.scope = 'web'` membuat router (`yannajah-cmd.js`) diam total, scheduler berhenti, `yannajah.js` menunggu saat startup, dan `library/license.js` mengecek ulang tiap 30 detik sampai dimatikan.
+- *Web database* (`PUT /api/dash/maintenance/web`, migrasi 008): semua route dashboard & login menolak non-DEVELOPER dengan `503 WEB_MAINTENANCE`; state bot `maintenance.scope = 'web'` membuat router (`yannai-cmd.js`) diam total, scheduler berhenti, `yannajah.js` menunggu saat startup, dan `library/license.js` mengecek ulang tiap 30 detik sampai dimatikan.
 - *Per bot* & *global*: bot tetap terhubung; non-owner dibalas pesan maintenance. Bot milik rank di `exempt_ranks` tidak terkena maintenance global.
 
 **Satu session = satu proses.** Lokal: lock file di folder session (pid hidup → tolak). Pusat: lease `instance_id` — login proses lain ditolak `409 INSTANCE_ACTIVE` selama proses lama masih heartbeat (< 3 menit), kecuali `force` (proses lama otomatis terkunci). Nomor WhatsApp yang dipairing wajib sama dengan nomor bot di dashboard; jika berbeda session dilepas.
@@ -92,6 +92,6 @@ module.exports = textTool({ id: 'text.balik', name: 'balikteks', category: 'text
 ```
 
 Hook non-command (`onMessage`, mis. anti-link, AFK, jawaban game) berjalan dengan urutan tetap
-`HOOK_ORDER` di `yannajah-cmd.js`; hook baru berjalan setelahnya.
+`HOOK_ORDER` di `yannai-cmd.js`; hook baru berjalan setelahnya.
 Metadata wajib: `id` unik, `name`, `category`, `description`, `aliases`, `permission` (user/premium/admin/owner), `scope` (all/group/private), `status`, `params`, `dependencies`. Nama/alias yang bentrok ditolak saat load (lihat `npm run features:report`). Plugin format lama (`handler.command = [...]`) tetap didukung lewat adapter.
 **Plugin tidak tepercaya**: Node.js tidak menyediakan sandbox yang aman, jadi file di `plugins/external/` **tidak dimuat** kecuali SHA-256-nya didaftarkan di `settingsbot.js → plugin.trustedExternal`.

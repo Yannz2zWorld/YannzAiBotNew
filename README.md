@@ -157,13 +157,13 @@ YannzAiBotNew/
 ├── handler.js          event WhatsApp: pesan masuk & welcome/left grup
 ├── yannajah.js         entry bot (diobfuscate saat build, berisi tautan web database):
 │                       banner, lisensi, database, plugin, koneksi WhatsApp
-├── yannajah-cmd.js     router command (urutan cek: lisensi, maintenance, izin, limit, cooldown, …)
+├── yannai-cmd.js       router command (urutan cek: lisensi, maintenance, izin, limit, cooldown, …)
 ├── package.json
 ├── README.md
 ├── settingsbot.js      konfigurasi bot (non-rahasia; secret dari .env)
 ├── source/
 │   ├── message.js      serializer pesan (objek `m`, LID → nomor)
-│   ├── yannajah-menu.js  isi menu bot, dibangun dari registry fitur
+│   ├── yannai-menu.js    isi menu bot, dibangun dari registry fitur
 │   └── database.js     database JSON lokal (atomik + .bak)
 ├── lib/                logika bersama fitur: game.js, tebak.js, economy.js, welcome.js, store.js, …
 ├── library/            inti: yannajah.js (namespace), config-loader, connection, license, registry,
@@ -179,4 +179,4 @@ YannzAiBotNew/
 └── docs/
 ```
 
-Alur pesan: `yannajah.js` → `handler.js` → `source/message.js` → `yannajah-cmd.js` → `plugins/<kategori>/<command>.js` (logika bersama di `lib/`).
+Alur pesan: `yannajah.js` → `handler.js` → `source/message.js` → `yannai-cmd.js` → `plugins/<kategori>/<command>.js` (logika bersama di `lib/`).

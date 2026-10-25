@@ -23,8 +23,8 @@ if (licenseUrl) {
   const local = u && ['localhost', '127.0.0.1', '::1'].includes(u.hostname);
   if (!u || (u.protocol !== 'https:' && !local)) { console.error('--license-url harus URL https (http hanya untuk localhost)'); process.exit(1); }
 }
-// Struktur seperti Yann AI V15: yannajah.js, handler.js, yannajah-cmd.js, settingsbot.js, source/, lib/, library/, plugins/.
-const INCLUDE = ['yannajah.js', 'handler.js', 'yannajah-cmd.js', 'settingsbot.js', 'package.json', 'package-lock.json', '.env.example', 'source', 'lib', 'library', 'plugins', 'data', 'assets', 'README.md'];
+// Struktur seperti Yann AI V15: yannajah.js, handler.js, yannai-cmd.js, settingsbot.js, source/, lib/, library/, plugins/.
+const INCLUDE = ['yannajah.js', 'handler.js', 'yannai-cmd.js', 'settingsbot.js', 'package.json', 'package-lock.json', '.env.example', 'source', 'lib', 'library', 'plugins', 'data', 'assets', 'README.md'];
 const NO_OBFUSCATE = new Set(['settingsbot.js']);
 const OBF_OPTIONS = {
   compact: true, controlFlowFlattening: false, deadCodeInjection: false, debugProtection: false, selfDefending: false,

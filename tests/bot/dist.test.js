@@ -28,7 +28,7 @@ test('build dist (obfuscated) bisa dimuat dan dijalankan', { timeout: 300000 }, 
     const { LicenseClient } = require('./library/license');
     const lic = new LicenseClient({ ...cfg.license, serverUrl: 'https://server-lain.example.com', tokenFile: 'library/database/_dist-test.json' }, { logger: { info() {}, warn() {}, error() {} } });
     const out = { size: r.features.size, errors: r.loadErrors.length, upper: r.resolve('upper').pure('dist'), calc: r.resolve('calc').pure('6*7'),
-      router: typeof require('./yannajah-cmd').createRouter, handler: typeof require('./handler').initializerHandler, wa: typeof require('./library/connection').WhatsAppManager, lic: lic.base, cfgUrl: cfg.license.serverUrl, name: cfg.bot.projectName };
+      router: typeof require('./yannai-cmd').createRouter, handler: typeof require('./handler').initializerHandler, wa: typeof require('./library/connection').WhatsAppManager, lic: lic.base, cfgUrl: cfg.license.serverUrl, name: cfg.bot.projectName };
     process.stdout.write(JSON.stringify(out));`;
   const out = JSON.parse(execFileSync(process.execPath, ['-e', script], { cwd: DIST, encoding: 'utf8', env: { ...process.env, LICENSE_SERVER_URL: 'https://server-lain.example.com' } }));
   // .env & settingsbot.js menunjuk server lain, tapi bot hasil build tetap ke website tertanam.

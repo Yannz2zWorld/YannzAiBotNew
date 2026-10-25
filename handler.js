@@ -1,10 +1,10 @@
 'use strict';
 // Event WhatsApp (seperti handler.js V15). Alur pesan:
-//   messages.upsert -> source/message.js (serializer jadi `m`) -> yannajah-cmd.js (router) -> plugins/**
+//   messages.upsert -> source/message.js (serializer jadi `m`) -> yannai-cmd.js (router) -> plugins/**
 // Event grup: welcome / left (teks per grup, lib/welcome.js). Semuanya mati kalau lisensi terkunci.
 
 const { serialize } = require('./source/message');
-const { createRouter } = require('./yannajah-cmd');
+const { createRouter } = require('./yannai-cmd');
 const { render, DEFAULT_WELCOME, DEFAULT_LEFT } = require('./lib/welcome');
 
 function createGroupHandler(yannajah, { logger }) {

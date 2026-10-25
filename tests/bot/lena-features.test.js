@@ -128,7 +128,7 @@ test('setreplystyle: owner memilih text/card; card menambah kartu link ke balasa
 test('getfile: daftar tanpa secret/data runtime, kirim file sebagai dokumen, tolak path di luar daftar', async () => {
   const { listFiles, resolveFile } = require('../../lib/getfile');
   const files = listFiles();
-  assert.ok(files.includes('settingsbot.js') && files.includes('yannajah-cmd.js') && files.includes('.env.example'));
+  assert.ok(files.includes('settingsbot.js') && files.includes('yannai-cmd.js') && files.includes('.env.example'));
   assert.ok(!files.some(f => f === '.env' || f.startsWith('node_modules/') || f.startsWith('.git/') || f.startsWith('library/database/') || f.startsWith('session/')));
   for (const bad of ['.env', '../../../etc/passwd', '/etc/passwd', 'node_modules/pg/package.json', 'library/database/database.json', '99999']) assert.equal(resolveFile(bad), null, bad);
   const x = mockCtx({ feature: F('getfile'), text: 'settingsbot.js', store: freshStore(), isOwner: true });

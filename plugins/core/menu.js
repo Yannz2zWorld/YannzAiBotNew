@@ -1,6 +1,6 @@
 'use strict';
 const { feature } = require('../../library/plugin-kit');
-const { buildMenu } = require('../../source/yannajah-menu');
+const { buildMenu } = require('../../source/yannai-menu');
 const { sendMenu, statusOpts } = require('../../lib/core');
 
 module.exports = feature({ id: 'core.menu', name: 'menu', aliases: ['help', 'start'], category: 'core', description: 'Daftar kategori & fitur bot', usage: '[kategori]', cooldown: 3, allowInMaintenance: false,
