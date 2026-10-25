@@ -37,10 +37,17 @@ const { sleep } = require('./library/function');
 const EXIT_DENIED = 78;
 const ROOT = __dirname;
 
+// Bisa tanya-jawab di console? Terminal biasa (TTY) atau console panel Pterodactyl (stdin dikirim
+// dari kolom perintah panel, bukan TTY). BOT_CONSOLE_INPUT=1 memaksa mode panel di host lain.
+const IS_PANEL = Boolean(process.env.P_SERVER_UUID || process.env.BOT_CONSOLE_INPUT === '1');
+const canPrompt = () => Boolean(process.stdin.isTTY) || IS_PANEL;
+
 function ask(question, { hidden = false } = {}) {
   return new Promise(resolve => {
-    const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true });
-    if (hidden) rl._writeToOutput = s => rl.output.write(s.includes(question) ? s : s.replace(/[^\r\n]/g, '*'));
+    const tty = Boolean(process.stdin.isTTY);
+    // Panel: input tidak ditampilkan ulang oleh console, jadi password tidak terlihat.
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: tty });
+    if (hidden && tty) rl._writeToOutput = s => rl.output.write(s.includes(question) ? s : s.replace(/[^\r\n]/g, '*'));
     rl.question(question, a => { rl.close(); if (hidden) process.stdout.write('\n'); resolve(String(a || '').trim()); });
   });
 }
@@ -58,12 +65,12 @@ async function authenticate(license, config, logger) {
     } catch (e) {
       if (e.code !== 'SERVER_UNREACHABLE') throw e;
       logger.warn(`Server lisensi tidak bisa dihubungi (percobaan ${i}/3)`);
-      if (i === 3) { console.log(chalk.red('✖ Server lisensi tidak bisa dihubungi. Bot tidak dijalankan (gagal aman).')); return false; }
+      if (i === 3) { console.log(chalk.red(`✖ ${e.userMessage || 'Web database tidak bisa dihubungi.'} Bot tidak dijalankan (gagal aman).`)); return false; }
       await sleep(5000 * i);
     }
   }
   // 2) login nomor bot + password bot
-  const interactive = process.stdin.isTTY;
+  const interactive = canPrompt();
   const envPhone = process.env.BOT_AUTH_PHONE, envPass = process.env.BOT_AUTH_PASSWORD;
   if (!interactive && !(envPhone && envPass)) {
     console.log(chalk.red('✖ Butuh login ke server lisensi, tetapi tidak ada terminal interaktif. Jalankan sekali secara interaktif, atau isi BOT_AUTH_PHONE & BOT_AUTH_PASSWORD (env) untuk login pertama.'));
@@ -110,7 +117,7 @@ async function choosePairingMethod(config) {
   if (process.argv.includes('--qr')) return 'qr';
   if (process.argv.includes('--pairing-code')) return 'pairing';
   if (config.pairing.method !== 'ask') return config.pairing.method;
-  if (!process.stdin.isTTY) return 'qr';
+  if (!canPrompt()) return 'qr';
   console.log(chalk.cyan('\nBelum ada session WhatsApp. Pilih metode tautkan perangkat:\n  1) QR code\n  2) Pairing code (nomor telepon)'));
   const a = await ask(chalk.blue('Pilih 1/2: '));
   return a === '2' ? 'pairing' : 'qr';
@@ -166,15 +173,23 @@ async function main() {
   wa.on('number_mismatch', () => shutdown('number_mismatch', EXIT_DENIED));
 
   // Ban / disable / sesi dicabut dari dashboard -> hentikan pemakaian WhatsApp (tidak reconnect).
+  let dbDown = false;
   license.on('locked', reason => {
     logger.warn(`Lisensi terkunci: ${license.describe(reason)} — koneksi WhatsApp dihentikan`);
+    if (reason === 'SERVER_UNREACHABLE') {
+      dbDown = true;
+      console.log(chalk.red(`✖ ${license.lastError || 'Web database tidak bisa dihubungi.'} Bot BERHENTI (WhatsApp diputus) dan dicek ulang tiap 30 detik...`));
+    }
     wa.stop().catch(() => {});
     // Server tidak terjangkau: tetap hidup dan tunggu pulih (heartbeat terus mencoba).
     // Sesi dicabut / bot diban / disable: butuh tindakan admin + login ulang -> keluar 78.
     if (reason !== 'SERVER_UNREACHABLE') shutdown(`lisensi terkunci (${reason})`, EXIT_DENIED);
   });
   // Pulih dari gangguan jaringan ke server lisensi (token masih sah) -> sambung lagi.
-  license.on('state', s => { if (s.allowed && wa.stopped && !shuttingDown && wa.hasSession()) wa.start().catch(e => logger.error('Gagal menyambung ulang', e.message)); });
+  license.on('state', s => {
+    if (dbDown && s.allowed) { dbDown = false; console.log(chalk.green('✔ Web database tersambung lagi. Bot jalan kembali.')); }
+    if (s.allowed && wa.stopped && !shuttingDown && wa.hasSession()) wa.start().catch(e => logger.error('Gagal menyambung ulang', e.message));
+  });
   license.startHeartbeat();
   license.timer?.ref?.();   // proses bot tetap hidup selama heartbeat berjalan (menunggu pulih bila server lisensi down)
 

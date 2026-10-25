@@ -22,7 +22,8 @@
     "test:server": "node --test --test-concurrency=1 \"tests/server/*.test.js\"",
     "features:report": "node tools/feature-report.js",
     "catalog:sync": "node tools/sync-apiz2z-catalog.js",
-    "build:dist": "node tools/build-dist.js"
+    "build:dist": "node tools/build-dist.js",
+    "release": "node tools/build-release.js"
   },
   "license": "MIT",
   "devDependencies": {

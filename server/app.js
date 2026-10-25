@@ -46,6 +46,10 @@ function createApp({ db, cfg, logger = console } = {}) {
   app.use((err, req, res, next) => {
     const e = err instanceof HttpError ? err : fromDatabase(err) || (err.type === 'entity.parse.failed' ? new HttpError(400, 'INVALID_JSON', 'Body JSON tidak valid.') : err.type === 'entity.too.large' ? new HttpError(413, 'PAYLOAD_TOO_LARGE', 'Body terlalu besar.') : null);
     if (e) return res.status(e.status).json({ success: false, error: e.code, message: e.message, ...e.extra });
+    if (err.isDatabaseError && err.unavailable) {
+      logger.error('Database tidak bisa dihubungi:', { path: req.path, code: err.code });
+      return res.status(503).json({ success: false, error: 'DATABASE_UNAVAILABLE', message: 'Web database sedang tidak bisa dihubungi. Coba lagi nanti.' });
+    }
     logger.error('Server error:', { path: req.path, code: err.code || err.name || 'ERROR' });
     res.status(500).json({ success: false, error: 'INTERNAL_ERROR', message: 'Terjadi kesalahan di server.' });
   });

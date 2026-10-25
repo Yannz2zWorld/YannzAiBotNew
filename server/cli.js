@@ -42,7 +42,21 @@ function args() {
   return out;
 }
 
+// Input dari pipe/skrip (bukan terminal): baca per baris dari satu reader bersama.
+let lineReader = null;
+function nextLine() {
+  if (!lineReader) {
+    const rl = readline.createInterface({ input: process.stdin });
+    const queue = [], waiters = [];
+    rl.on('line', l => (waiters.length ? waiters.shift()(l) : queue.push(l)));
+    rl.on('close', () => { while (waiters.length) waiters.shift()(''); });
+    lineReader = () => (queue.length ? Promise.resolve(queue.shift()) : new Promise(r => waiters.push(r)));
+  }
+  return lineReader();
+}
+
 function askHidden(prompt) {
+  if (!process.stdin.isTTY) { process.stdout.write(prompt + '\n'); return nextLine(); }
   return new Promise(resolve => {
     const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true });
     rl._writeToOutput = s => { if (s.includes(prompt)) rl.output.write(s); else rl.output.write('*'); };
@@ -74,6 +88,11 @@ async function main() {
       case 'status': {
         const p = await pending(db);
         console.log(p.length ? `Migrasi tertunda: ${p.join(', ')}` : 'Tidak ada migrasi tertunda.');
+        if (!p.length) {
+          const n = (await db.query("SELECT count(*)::int AS n FROM accounts WHERE rank_code = 'DEVELOPER' AND deleted_at IS NULL"))[0].n;
+          const b = (await db.query('SELECT count(*)::int AS n FROM bots WHERE deleted_at IS NULL'))[0].n;
+          console.log(`developer: ${n}\nbot terdaftar: ${b}`);
+        }
         break;
       }
       case 'bootstrap-developer': {

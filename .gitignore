@@ -16,3 +16,4 @@ server/data/
 dist/
 reports/*.json
 *.log
+release/

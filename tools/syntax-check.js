@@ -1,5 +1,5 @@
 'use strict';
-// Syntax check seluruh JavaScript proyek (node --check), tanpa node_modules / dist.
+// Syntax check seluruh JavaScript proyek (node --check), tanpa node_modules / dist / release.
 //   node tools/syntax-check.js [folder]
 const fs = require('fs');
 const path = require('path');
@@ -10,7 +10,7 @@ const SKIP = new Set(['node_modules', '.git', 'session', 'reports']);
 const files = [];
 (function walk(d) {
   for (const e of fs.readdirSync(d, { withFileTypes: true })) {
-    if (SKIP.has(e.name) || (e.name === 'dist' && d === root)) continue;
+    if (SKIP.has(e.name) || (['dist', 'release'].includes(e.name) && d === root)) continue;
     const p = path.join(d, e.name);
     if (e.isDirectory()) walk(p);
     else if (/\.(c?js)$/.test(e.name)) files.push(p);

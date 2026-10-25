@@ -29,9 +29,12 @@ const MESSAGES = {
   SESSION_REVOKED: 'Sesi bot dicabut dari dashboard.',
   SESSION_EXPIRED: 'Sesi bot kedaluwarsa.',
   INVALID_TOKEN: 'Token bot tidak valid.',
-  SERVER_UNREACHABLE: 'Server lisensi tidak bisa dihubungi.'
+  SERVER_UNREACHABLE: 'Web database (server lisensi) tidak bisa dihubungi.',
+  DATABASE_UNAVAILABLE: 'Web database sedang mati / tidak bisa dihubungi.'
 };
 
+// Maintenance web aktif atau web database tidak bisa dihubungi: cek ulang tiap 30 detik supaya
+// bot langsung jalan lagi begitu pulih (heartbeat biasa jauh lebih jarang).
 const WEB_MAINTENANCE_POLL_MS = 30000;
 
 class LicenseClient extends EventEmitter {
@@ -90,6 +93,11 @@ class LicenseClient extends EventEmitter {
     try { json = JSON.parse(r.body.toString('utf8')); } catch { /* respons bukan JSON */ }
     if (r.status >= 200 && r.status < 300 && json?.success) return json;
     if (!json) throw err('SERVER_UNREACHABLE', `Respons server lisensi tidak valid (HTTP ${r.status})`, { userMessage: MESSAGES.SERVER_UNREACHABLE, status: r.status });
+    // Gangguan sementara di sisi server (database mati, 5xx, rate limit): token TIDAK dibuang.
+    if (r.status >= 500 || r.status === 429) {
+      const userMessage = json.error === 'DATABASE_UNAVAILABLE' ? MESSAGES.DATABASE_UNAVAILABLE : MESSAGES[json.error] || MESSAGES.SERVER_UNREACHABLE;
+      throw err('SERVER_UNREACHABLE', `Server lisensi sedang bermasalah (HTTP ${r.status} ${json.error || ''})`.trim(), { userMessage, status: r.status, details: { reason: json.error } });
+    }
     const code = json.error || 'AUTH_FAILED';
     throw err(code, `Server lisensi menolak: ${code}`, { userMessage: json.message || MESSAGES[code] || 'Akses ditolak server lisensi.', status: r.status, details: { reasons: json.reasons, ban_reason: json.ban_reason, reason: json.reason } });
   }
@@ -99,15 +107,19 @@ class LicenseClient extends EventEmitter {
     this.lastOkAt = Date.now();
     this.locked = !state.allowed;
     this.lockReason = state.allowed ? null : (state.reasons || ['DENIED'])[0];
-    // Maintenance web database: cek ulang tiap 30 detik supaya bot langsung jalan lagi begitu dimatikan.
-    const web = state.maintenance?.scope === 'web';
-    if (web && !this.webTimer && this.session.token) { this.webTimer = setInterval(() => this.heartbeat().catch(() => {}), WEB_MAINTENANCE_POLL_MS); this.webTimer.unref?.(); }
-    else if (!web && this.webTimer) { clearInterval(this.webTimer); this.webTimer = null; }
+    this._fastPoll(state.maintenance?.scope === 'web');
     this.emit('state', state);
     if (this.locked) this.emit('locked', this.lockReason, state);
   }
 
+  // Timer cek-ulang cepat (lihat WEB_MAINTENANCE_POLL_MS).
+  _fastPoll(on) {
+    if (on && !this.webTimer && this.session.token) { this.webTimer = setInterval(() => this.heartbeat().catch(() => {}), WEB_MAINTENANCE_POLL_MS); this.webTimer.unref?.(); }
+    else if (!on && this.webTimer) { clearInterval(this.webTimer); this.webTimer = null; }
+  }
+
   _lock(reason) {
+    if (reason === 'SERVER_UNREACHABLE') this._fastPoll(true);
     const was = this.locked;
     this.locked = true; this.lockReason = reason;
     if (!was) this.emit('locked', reason, this.state);
@@ -149,8 +161,9 @@ class LicenseClient extends EventEmitter {
     } catch (e) {
       if (e.code === 'SERVER_UNREACHABLE') {
         const graceMs = this.cfg.offlineGraceMinutes * 60000;
+        this.lastError = e.userMessage;
         if (Date.now() - this.lastOkAt > graceMs) this._lock('SERVER_UNREACHABLE');
-        this.logger?.warn('Heartbeat lisensi gagal', { code: e.code, locked: this.locked });
+        this.logger?.warn('Heartbeat lisensi gagal', { code: e.code, reason: e.details?.reason, locked: this.locked });
         return;
       }
       // Dicabut / kedaluwarsa / instance lain: kunci dan buang token. Tidak ada akses penuh secara default.

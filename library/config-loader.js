@@ -73,8 +73,6 @@ function validate(cfg) {
 
   need(Number.isInteger(cfg.limit?.daily) && cfg.limit.daily >= 0, 'limit.daily harus bilangan bulat >= 0');
   need(isObj(cfg.mess) && ['owner', 'admin', 'group', 'wait', 'error'].every(k => typeof cfg.mess[k] === 'string'), 'mess.* (owner/admin/group/wait/error) wajib ada');
-  need(Number.isInteger(cfg.dashboard?.port) && cfg.dashboard.port > 0 && cfg.dashboard.port < 65536, 'dashboard.port tidak valid');
-  need(Number.isInteger(cfg.dashboard?.bcryptCost) && cfg.dashboard.bcryptCost >= 10 && cfg.dashboard.bcryptCost <= 15, 'dashboard.bcryptCost 10-15');
 
   if (p.length) throw new ConfigError(p);
   return cfg;

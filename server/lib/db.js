@@ -6,12 +6,21 @@
 
 const { Pool } = require('pg');
 
+// Database tidak bisa dihubungi (mati, jaringan putus, kepenuhan koneksi, sedang restart) —
+// beda dengan error query biasa. Dipakai untuk membalas 503 DATABASE_UNAVAILABLE.
+const UNAVAILABLE = new Set(['ECONNREFUSED', 'ECONNRESET', 'ETIMEDOUT', 'ENOTFOUND', 'EAI_AGAIN', 'EHOSTUNREACH', 'ENETUNREACH', 'EPIPE', '57P01', '57P02', '57P03', '53300']);
+function isUnavailable(error) {
+  const code = String(error?.code || '');
+  return UNAVAILABLE.has(code) || code.startsWith('08') || /Connection terminated|timeout exceeded when trying to connect|Client has encountered a connection error/i.test(String(error?.message || ''));
+}
+
 function wrapError(error) {
   if (error && error.isDatabaseError) return error;
   const wrapped = new Error('Operasi database gagal.');
   wrapped.code = error?.code || 'DATABASE_QUERY_FAILED';
   wrapped.constraint = error?.constraint;   // nama constraint aman ditampilkan, berguna untuk pesan 409
   wrapped.isDatabaseError = true;
+  wrapped.unavailable = isUnavailable(error);
   wrapped.cause = error;
   return wrapped;
 }

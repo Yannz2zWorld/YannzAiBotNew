@@ -99,7 +99,7 @@ module.exports = {
     serverUrl: (e => (e.locked && e.url ? e.url : env('LICENSE_SERVER_URL', 'http://127.0.0.1:8787')))(require('./library/license-endpoint')),
     instanceName: env('BOT_INSTANCE_NAME', 'yannajah-main'),
     tokenFile: env('LICENSE_TOKEN_FILE', 'library/database/license-session.json'),
-    heartbeatMinutes: envInt('LICENSE_HEARTBEAT_MINUTES', 10),
+    heartbeatMinutes: envInt('LICENSE_HEARTBEAT_MINUTES', 2),
     requestTimeoutMs: envInt('LICENSE_TIMEOUT_MS', 15000),
     // 0 = gagal aman: kalau server lisensi tidak bisa dihubungi, fitur utama tidak aktif.
     offlineGraceMinutes: envInt('LICENSE_OFFLINE_GRACE_MINUTES', 0),
@@ -177,16 +177,7 @@ module.exports = {
   retry: { sendMessage: 2 },
   timeout: { commandMs: 120000 },
 
-  // ------------------------------------------------------------------ dashboard / backend (server/)
-  dashboard: {
-    host: env('DASHBOARD_HOST', '127.0.0.1'),
-    port: envInt('DASHBOARD_PORT', 8787),
-    dbFile: env('DASHBOARD_DB_FILE', 'server/data/yannajah-auth.db'),
-    trustProxy: envBool('DASHBOARD_TRUST_PROXY', false),
-    botSessionDays: envInt('BOT_SESSION_DAYS', 30),
-    adminSessionHours: envInt('ADMIN_SESSION_HOURS', 12),
-    bcryptCost: envInt('BCRYPT_COST', 12)
-  },
+  // Web database (server/) punya konfigurasi sendiri di .env-nya (DASHBOARD_*), tidak di sini.
 
   // ------------------------------------------------------------------ harga & sewa (V15)
   harga: { prem: '5000', sewa: '10000' },

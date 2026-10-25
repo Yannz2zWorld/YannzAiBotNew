@@ -1,18 +1,29 @@
 'use strict';
-// Konfigurasi backend/dashboard. Nilai non-rahasia dari settingsbot.js (dashboard.*),
-// secret HANYA dari environment. Di production, secret yang wajib harus ada atau server tidak mau start.
+// Konfigurasi web database (backend + dashboard). Berdiri sendiri (tidak membaca file bot):
+// nilai dari environment / .env dengan default aman. Secret HANYA dari environment.
+// Di production, secret yang wajib harus ada atau server tidak mau start.
 
-const { loadDotEnv } = require('../library/config-loader');
+const { loadDotEnv } = require('./lib/env');
+
+const intOf = (v, d, lo, hi) => { const n = parseInt(v, 10); return Number.isInteger(n) && n >= lo && n <= hi ? n : d; };
+const boolOf = (v, d) => (v === undefined || v === '' ? d : /^(1|true|yes|on)$/i.test(String(v)));
 
 function buildServerConfig(env = process.env) {
-  loadDotEnv();
-  const settings = require('../settingsbot.js').dashboard;
+  if (env === process.env) loadDotEnv();
+  const settings = {
+    host: env.DASHBOARD_HOST || '127.0.0.1',
+    port: intOf(env.DASHBOARD_PORT, 8787, 1, 65535),
+    trustProxy: boolOf(env.DASHBOARD_TRUST_PROXY, false),
+    botSessionDays: intOf(env.BOT_SESSION_DAYS, 30, 1, 365),
+    adminSessionHours: intOf(env.ADMIN_SESSION_HOURS, 12, 1, 168),
+    bcryptCost: intOf(env.BCRYPT_COST, 12, 10, 15)
+  };
   const production = env.NODE_ENV === 'production';
   const publicUrl = (env.DASHBOARD_PUBLIC_URL || `http://${settings.host}:${settings.port}`).replace(/\/+$/, '');
   const cfg = {
     production,
     host: settings.host,
-    port: Number(env.DASHBOARD_PORT || settings.port),
+    port: settings.port,
     publicUrl,
     origin: new URL(publicUrl).origin,
     secureCookies: publicUrl.startsWith('https://'),

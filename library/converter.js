@@ -5,11 +5,18 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { spawn } = require('child_process');
+const { spawn, spawnSync } = require('child_process');
 const { err } = require('./errors');
 const { sniffMime, Semaphore } = require('./function');
 
-const FFMPEG = process.env.FFMPEG_PATH || 'ffmpeg';
+// ffmpeg: FFMPEG_PATH > ffmpeg sistem > paket ffmpeg-static (opsional, untuk panel tanpa ffmpeg).
+function resolveFfmpeg() {
+  if (process.env.FFMPEG_PATH) return process.env.FFMPEG_PATH;
+  try { if (spawnSync('ffmpeg', ['-version'], { stdio: 'ignore', timeout: 5000 }).status === 0) return 'ffmpeg'; } catch { /* tidak ada */ }
+  try { const p = require('ffmpeg-static'); if (p) return p; } catch { /* tidak terpasang */ }
+  return 'ffmpeg';
+}
+const FFMPEG = resolveFfmpeg();
 // Batas CPU (aturan VPS bersama): ffmpeg diantrikan (default 1 proses sekaligus) dan dibatasi thread-nya.
 const intEnv = (k, d, lo, hi) => { const n = parseInt(process.env[k], 10); return Number.isInteger(n) && n >= lo && n <= hi ? n : d; };
 const queue = new Semaphore(intEnv('MEDIA_MAX_CONCURRENT', 1, 1, 8));
