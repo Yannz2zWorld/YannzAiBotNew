@@ -2,36 +2,17 @@
 // Harness test backend: app asli (server/app.js) terhadap schema PostgreSQL sekali pakai.
 // Butuh TEST_DATABASE_URL (database yang boleh dibuat/dihapus schema-nya). JANGAN arahkan ke production:
 // setiap run membuat dan menghapus schema-nya sendiri. Ditolak kalau sama dengan DATABASE_URL.
-// Google ID token = JWT RS256 asli yang diverifikasi google-auth-library; hanya unduhan sertifikat
-// Google dan token endpoint yang di-stub (tidak ada request keluar).
 
 const crypto = require('crypto');
 const http = require('http');
-const { OAuth2Client } = require('google-auth-library');
 const { createDb } = require('../../server/lib/db');
 const { migrate } = require('../../server/lib/migrate');
 const { createApp } = require('../../server/app');
-const { createGoogle } = require('../../server/lib/google');
 const { sha256 } = require('../../server/lib/security');
 
 const URL_ = process.env.TEST_DATABASE_URL || '';
 const skip = !URL_ ? 'TEST_DATABASE_URL tidak diset (test backend butuh PostgreSQL sekali pakai)'
   : (process.env.DATABASE_URL && process.env.DATABASE_URL === URL_ ? 'TEST_DATABASE_URL sama dengan DATABASE_URL — ditolak demi keamanan data' : false);
-
-const CLIENT_ID = 'yannajah-test.apps.googleusercontent.com';
-const KID = 'yannajah-test-kid';
-const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', { modulusLength: 2048 });
-OAuth2Client.prototype.getFederatedSignonCertsAsync = async () => ({ certs: { [KID]: publicKey.export({ type: 'spki', format: 'pem' }) }, format: 'PEM' });
-let nextIdToken = null;
-OAuth2Client.prototype.getToken = async function () { return { tokens: { id_token: nextIdToken } }; };
-
-function googleIdToken(claims) {
-  const b64 = o => Buffer.from(JSON.stringify(o)).toString('base64url');
-  const now = Math.floor(Date.now() / 1000);
-  const payload = { iss: 'https://accounts.google.com', aud: CLIENT_ID, email_verified: true, iat: now, exp: now + 3600, ...claims };
-  const head = b64({ alg: 'RS256', kid: KID, typ: 'JWT' }) + '.' + b64(payload);
-  return head + '.' + crypto.sign('RSA-SHA256', Buffer.from(head), privateKey).toString('base64url');
-}
 
 async function setup({ cfgOverrides = {} } = {}) {
   const schema = 'yt_' + crypto.randomBytes(6).toString('hex');
@@ -43,14 +24,14 @@ async function setup({ cfgOverrides = {} } = {}) {
   const cfg = {
     production: false, host: '127.0.0.1', port: 0, publicUrl: 'http://127.0.0.1', origin: null, secureCookies: false, trustProxy: false,
     sessionSecret: crypto.randomBytes(32).toString('hex'), openSignup: true, adminSessionHours: 12, botSessionDays: 30, bcryptCost: 10,
-    backupKey: 'test-backup-key-0123456789', google: { clientId: CLIENT_ID, clientSecret: 'test-secret', callbackUrl: 'http://127.0.0.1/auth/google/callback' },
+    backupKey: 'test-backup-key-0123456789',
     ...cfgOverrides
   };
   const server = http.createServer();
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const origin = `http://127.0.0.1:${server.address().port}`;
   cfg.origin = origin; cfg.publicUrl = origin;
-  const app = createApp({ db, cfg, googleClient: createGoogle(cfg.google), logger: { error() {} } });
+  const app = createApp({ db, cfg, logger: { error() {} } });
   server.on('request', app);
 
   async function request(method, path, { cookie, csrf, body, headers = {}, origin: o = origin } = {}) {
@@ -100,11 +81,11 @@ async function setup({ cfgOverrides = {} } = {}) {
     await db.close();
   }
 
-  return { db, cfg, origin, request, account, login, as, close, schema, setIdToken: t => { nextIdToken = t; } };
+  return { db, cfg, origin, request, account, login, as, close, schema };
 }
 
 let phoneSeq = 0;
 const phone = () => `6281${String(process.pid % 100).padStart(2, '0')}${String(++phoneSeq).padStart(7, '0')}`;
 const instanceId = () => crypto.randomBytes(18).toString('base64url');
 
-module.exports = { setup, skip, googleIdToken, CLIENT_ID, phone, instanceId };
+module.exports = { setup, skip, phone, instanceId };

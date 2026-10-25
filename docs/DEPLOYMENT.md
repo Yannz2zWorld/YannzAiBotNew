@@ -67,7 +67,7 @@ Login bot pertama kali dilakukan interaktif (`node index.js`, isi nomor bot + pa
 
 **Firewall**: `ufw allow OpenSSH; ufw allow 80,443/tcp; ufw enable`. Port 5432 & 8787 hanya localhost. SSH: login kunci saja (`PasswordAuthentication no`), nonaktifkan root login.
 
-**Google OAuth**: Google Cloud Console → APIs & Services → Credentials → OAuth client ID (Web application). Authorized redirect URI: `https://lisensi.domainkamu.com/auth/google/callback`. Isi `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_CALLBACK_URL`.
+**Login website**: hanya username/email + password (tidak ada Google OAuth, tidak perlu Client ID).
 
 ## 4. Operasi
 

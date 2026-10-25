@@ -138,57 +138,14 @@ it('akun DEVELOPER tidak bisa dibuat lewat registrasi / API biasa', async () => 
   assert.equal(viaApi.status, 403); assert.equal(viaApi.json.error, 'RANK_NOT_ASSIGNABLE');
   const res = await t.account('RESELLER', { manager: dev.id });
   assert.equal((await t.as(dev).post(`/api/dash/accounts/${res.id}/rank`, { rank: 'DEVELOPER' })).json.error, 'RANK_NOT_ASSIGNABLE');
-  // Google TIDAK membuat akun: email baru yang belum terdaftar ditolak (semua akun dibuat developer/atasan).
-  t.setIdToken(h.googleIdToken({ sub: 'google-sub-new-1', email: 'baru@gmail.example', nonce: 'NONCE_PLACEHOLDER' }));
-  const start = await t.request('GET', '/auth/google');
-  assert.equal(start.status, 302);
-  const cookie = start.headers.getSetCookie().find(c => c.startsWith('yan_oauth=')).split(';')[0];
-  const [state, nonce] = decodeURIComponent(cookie.split('=')[1]).split('.');
-  assert.equal(new URL(start.headers.get('location')).hostname, 'accounts.google.com');
-  t.setIdToken(h.googleIdToken({ sub: 'google-sub-new-1', email: 'baru@gmail.example', nonce }));
-  const cb = await t.request('GET', `/auth/google/callback?code=abc&state=${state}`, { cookie });
-  assert.equal(cb.status, 302); assert.equal(cb.headers.get('location'), '/?auth=closed');
-  assert.ok(!(cb.headers.getSetCookie() || []).some(c => c.startsWith('yan_sid=')), 'tidak ada sesi');
-  assert.equal((await t.db.query("SELECT count(*)::int AS n FROM accounts WHERE google_sub = 'google-sub-new-1'"))[0].n, 0, 'akun tidak dibuat');
 });
 
-it('Google OAuth: state salah, nonce salah, email belum terverifikasi, dan audience lain ditolak', async () => {
-  const start = async () => {
-    const r = await t.request('GET', '/auth/google');
-    const cookie = r.headers.getSetCookie().find(c => c.startsWith('yan_oauth=')).split(';')[0];
-    const [state, nonce] = decodeURIComponent(cookie.split('=')[1]).split('.');
-    return { cookie, state, nonce };
-  };
-  let s = await start();
-  t.setIdToken(h.googleIdToken({ sub: 'g-x', email: 'x@gmail.example', nonce: s.nonce }));
-  assert.equal((await t.request('GET', `/auth/google/callback?code=a&state=salah`, { cookie: s.cookie })).status, 400);
-  s = await start();
-  t.setIdToken(h.googleIdToken({ sub: 'g-x', email: 'x@gmail.example', nonce: 'nonce-lain' }));
-  assert.equal((await t.request('GET', `/auth/google/callback?code=a&state=${s.state}`, { cookie: s.cookie })).headers.get('location'), '/?auth=error');
-  s = await start();
-  t.setIdToken(h.googleIdToken({ sub: 'g-x', email: 'x@gmail.example', nonce: s.nonce, email_verified: false }));
-  assert.equal((await t.request('GET', `/auth/google/callback?code=a&state=${s.state}`, { cookie: s.cookie })).headers.get('location'), '/?auth=restricted');
-  s = await start();
-  t.setIdToken(h.googleIdToken({ sub: 'g-x', email: 'x@gmail.example', nonce: s.nonce, aud: 'aplikasi-lain.apps.googleusercontent.com' }));
-  assert.equal((await t.request('GET', `/auth/google/callback?code=a&state=${s.state}`, { cookie: s.cookie })).headers.get('location'), '/?auth=error');
-  assert.equal((await t.db.query("SELECT count(*)::int AS n FROM accounts WHERE google_sub = 'g-x'"))[0].n, 0);
-});
-
-it('Google OAuth menautkan akun yang dibuat admin berdasarkan email terverifikasi; akun banned tidak bisa login', async () => {
-  const pre = await t.account('RESELLER', { email: 'reseller.pre@example.test' });
-  const r = await t.request('GET', '/auth/google');
-  const cookie = r.headers.getSetCookie().find(c => c.startsWith('yan_oauth=')).split(';')[0];
-  const [state, nonce] = decodeURIComponent(cookie.split('=')[1]).split('.');
-  t.setIdToken(h.googleIdToken({ sub: 'g-pre', email: 'reseller.pre@example.test', nonce }));
-  assert.equal((await t.request('GET', `/auth/google/callback?code=a&state=${state}`, { cookie })).headers.get('location'), '/dashboard');
-  const row = (await t.db.query('SELECT google_sub, rank_code FROM accounts WHERE id = $1', [pre.id]))[0];
-  assert.deepEqual(row, { google_sub: 'g-pre', rank_code: 'RESELLER' });
-  await t.db.query("UPDATE accounts SET status = 'banned', status_changed_at = now() WHERE id = $1", [pre.id]);
-  const r2 = await t.request('GET', '/auth/google');
-  const c2 = r2.headers.getSetCookie().find(c => c.startsWith('yan_oauth=')).split(';')[0];
-  const [st2, n2] = decodeURIComponent(c2.split('=')[1]).split('.');
-  t.setIdToken(h.googleIdToken({ sub: 'g-pre', email: 'reseller.pre@example.test', nonce: n2 }));
-  assert.equal((await t.request('GET', `/auth/google/callback?code=a&state=${st2}`, { cookie: c2 })).headers.get('location'), '/?auth=restricted');
+it('login Google sudah dihapus: /auth/google tidak ada, halaman login hanya username/email + password', async () => {
+  for (const p of ['/auth/google', '/auth/google/callback?code=a&state=b']) assert.equal((await t.request('GET', p)).status, 404, p);
+  const cfg = await t.request('GET', '/auth/config');
+  assert.equal(cfg.json.google, undefined);
+  const page = await t.request('GET', '/');
+  assert.ok(!/google/i.test(page.text), 'tidak ada tombol Google di halaman login');
 });
 
 it('API langsung tidak bisa melewati permission UI; CSRF dan Origin wajib untuk mutasi', async () => {

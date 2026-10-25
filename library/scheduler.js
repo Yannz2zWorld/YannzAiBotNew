@@ -20,6 +20,7 @@ function start(yannajah, config, { intervalMs = 30000 } = {}) {
   let running = false;
   timer = setInterval(async () => {
     if (running || !yannajah.auth?.isActive?.() || !yannajah.socket) return;
+    if (yannajah.auth.maintenance?.().scope === 'web') return;   // maintenance web database: jadwal ikut berhenti
     running = true;
     const now = localNow(config.bot.timezone);
     for (const [name, fn] of tasks) {

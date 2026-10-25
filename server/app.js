@@ -6,9 +6,8 @@ const express = require('express');
 const { securityHeaders } = require('./lib/security');
 const { HttpError, fromDatabase } = require('./lib/errors');
 const { pending } = require('./lib/migrate');
-const { createGoogle } = require('./lib/google');
 
-function createApp({ db, cfg, googleClient = createGoogle(cfg.google), logger = console } = {}) {
+function createApp({ db, cfg, logger = console } = {}) {
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', cfg.trustProxy ? 1 : false);
@@ -33,7 +32,7 @@ function createApp({ db, cfg, googleClient = createGoogle(cfg.google), logger = 
   });
 
   app.use(require('./routes/botApi')({ db, cfg }));
-  app.use(require('./routes/auth')({ db, cfg, googleClient }));
+  app.use(require('./routes/auth')({ db, cfg }));
   app.use(require('./routes/dashboardApi')({ db, cfg }));
 
   const pub = path.join(__dirname, 'public');

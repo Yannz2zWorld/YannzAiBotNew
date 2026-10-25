@@ -86,6 +86,8 @@ function createRouter(yannajah, { config, logger }) {
       if (m.isCmd && isOwner) await denied(m, `${mess.unlicensed}\nAlasan: ${license.describe(license.lockReason)}`);
       return;
     }
+    // Maintenance WEB DATABASE: bot berhenti total (tidak membalas siapa pun, termasuk owner) sampai dimatikan.
+    if (license.maintenance().scope === 'web') return;
     if (await runHooks(m, flags)) return;
     if (!m.isCmd) return;
 

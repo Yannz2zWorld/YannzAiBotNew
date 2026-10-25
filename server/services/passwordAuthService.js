@@ -12,6 +12,7 @@ const { HttpError, unauthorized, forbidden, tooMany } = require('../lib/errors')
 const v = require('../lib/validate');
 const access = require('./accessControl');
 const audit = require('./auditService');
+const maintenance = require('./maintenanceService');
 
 const DEFAULTS = { maxFailuresPerEmail: 5, maxFailuresPerIp: 30, failureWindowMinutes: 15, lockMinutes: 15 };
 const WEB_MIN_RANK = 'RESELLER';
@@ -66,7 +67,7 @@ async function login(db, input, { ip = null, options = {} } = {}) {
   }
   const accountId = Number(row.id);
   const actor = await access.loadActor(db, accountId);
-  try { await assertWebAccess(db, actor); }
+  try { await assertWebAccess(db, actor); await maintenance.assertWebOpen(db, actor); }
   catch (e) { await recordAttempt(db, { hash, success: false, reason: e.code, ip }); throw e; }
   await db.query('UPDATE accounts SET failed_logins = 0, locked_until = NULL, last_login_at = now() WHERE id = $1', [accountId]);
   await recordAttempt(db, { hash, success: true, reason: null, ip });

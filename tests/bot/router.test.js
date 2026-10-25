@@ -63,6 +63,15 @@ test('maintenance: pengguna dapat pesan maintenance, owner tetap bisa, fitur all
   assert.match(t.replies[2], /Lisensi/);
 });
 
+test('maintenance WEB DATABASE: bot berhenti total — tidak membalas siapa pun, termasuk owner, hook juga diam', async () => {
+  const t = setup({ maintenance: { active: true, scope: 'web', message: 'Web DB maintenance' } });
+  await t.send('.upper a');
+  await t.send('.upper a', { sender: OWNER });
+  await t.send('.status');
+  await t.send('halo biasa');
+  assert.deepEqual(t.replies, []);
+});
+
 test('permission owner/admin dan scope grup/private', async () => {
   const t = setup();
   await t.send('.self');

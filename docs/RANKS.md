@@ -19,7 +19,7 @@ Tombol di dashboard hanya muncul untuk aksi yang boleh dilakukan, tapi server te
 | CEO | 1000 | tambah/hapus nomor · tambah/hapus **reseller, suki, king** |
 | DEVELOPER | ∞ | **semua** (rank DEVELOPER hanya lewat CLI) |
 
-- **Hanya DEVELOPER**: password bot (membuat & mengganti — tidak ada password otomatis), nyalakan/matikan bot, ganti nama, cabut sesi, ban/unban, maintenance per bot & global, reset password / ubah / ban akun, ganti rank, audit, riwayat login, kesehatan sistem, backup, melihat semua bot & aktivitas.
+- **Hanya DEVELOPER**: password bot (membuat & mengganti — tidak ada password otomatis), nyalakan/matikan bot, ganti nama, cabut sesi, ban/unban, maintenance per bot, global & **web database**, reset password / ubah / ban akun, ganti rank, audit, riwayat login, kesehatan sistem, backup, melihat semua bot & aktivitas.
 - Nomor wajib ditulis **diawali kode negara** (`6281234567890`, boleh `+62…`). Awalan `0` ditolak (`PHONE_COUNTRY_CODE`) supaya nomor luar negeri tidak salah ditebak jadi +62.
 - Nomor yang didaftarkan penjual belum punya password, jadi bot belum bisa login sampai DEVELOPER menetapkannya.
 
@@ -57,7 +57,7 @@ Tombol di dashboard hanya muncul untuk aksi yang boleh dilakukan, tapi server te
 ## Login website
 
 - **Username & password bebas**: username boleh huruf besar/kecil, spasi, simbol (maks 64, unik tanpa beda huruf besar/kecil); password bebas tanpa syarat panjang/huruf+angka (batas teknis hanya maks 72 byte karena bcrypt). Berlaku juga untuk password bot.
-- Masuk dengan **username (atau email) + password** yang dibuat atasan. Google OAuth opsional dan hanya **menautkan** ke akun yang email-nya sudah dibuat.
+- Masuk dengan **username (atau email) + password** yang dibuat atasan. Tidak ada login Google. Saat **maintenance web database** aktif, hanya DEVELOPER yang bisa masuk.
 - Semua orang bisa ganti password sendiri. Reset password akun lain hanya DEVELOPER (sesi lama dicabut). Password bot (berbeda dari password login website) hanya DEVELOPER.
 
 ## Migrasi dari rank lama

@@ -76,7 +76,7 @@ function securityHeaders(req, res, next) {
   res.set('Referrer-Policy', 'same-origin');
   res.set('Cross-Origin-Opener-Policy', 'same-origin');
   res.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-  res.set('Content-Security-Policy', "default-src 'self'; img-src 'self' data: https://lh3.googleusercontent.com; style-src 'self'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
+  res.set('Content-Security-Policy', "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
   if (req.secure) res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   next();
 }

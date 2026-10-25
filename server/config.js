@@ -20,11 +20,6 @@ function buildServerConfig(env = process.env) {
     databaseUrl: env.DATABASE_URL || '',
     databaseSchema: env.DATABASE_SCHEMA || null,
     sessionSecret: env.SESSION_SECRET || '',
-    google: {
-      clientId: env.GOOGLE_CLIENT_ID || '',
-      clientSecret: env.GOOGLE_CLIENT_SECRET || '',
-      callbackUrl: env.GOOGLE_CALLBACK_URL || `${publicUrl}/auth/google/callback`
-    },
     adminSessionHours: settings.adminSessionHours,
     botSessionDays: settings.botSessionDays,
     bcryptCost: settings.bcryptCost,
@@ -43,7 +38,6 @@ function buildServerConfig(env = process.env) {
     e.code = 'SERVER_CONFIG_INVALID';
     throw e;
   }
-  cfg.googleEnabled = Boolean(cfg.google.clientId && cfg.google.clientSecret);
   return cfg;
 }
 

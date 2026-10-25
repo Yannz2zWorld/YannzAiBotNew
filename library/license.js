@@ -32,6 +32,8 @@ const MESSAGES = {
   SERVER_UNREACHABLE: 'Server lisensi tidak bisa dihubungi.'
 };
 
+const WEB_MAINTENANCE_POLL_MS = 30000;
+
 class LicenseClient extends EventEmitter {
   constructor(cfg, { logger, transport = request, rootDir = path.join(__dirname, '..') } = {}) {
     super();
@@ -97,6 +99,10 @@ class LicenseClient extends EventEmitter {
     this.lastOkAt = Date.now();
     this.locked = !state.allowed;
     this.lockReason = state.allowed ? null : (state.reasons || ['DENIED'])[0];
+    // Maintenance web database: cek ulang tiap 30 detik supaya bot langsung jalan lagi begitu dimatikan.
+    const web = state.maintenance?.scope === 'web';
+    if (web && !this.webTimer && this.session.token) { this.webTimer = setInterval(() => this.heartbeat().catch(() => {}), WEB_MAINTENANCE_POLL_MS); this.webTimer.unref?.(); }
+    else if (!web && this.webTimer) { clearInterval(this.webTimer); this.webTimer = null; }
     this.emit('state', state);
     if (this.locked) this.emit('locked', this.lockReason, state);
   }
@@ -159,7 +165,11 @@ class LicenseClient extends EventEmitter {
     this.timer = setInterval(() => this.heartbeat(), this.cfg.heartbeatMinutes * 60000);
     this.timer.unref?.();
   }
-  stopHeartbeat() { if (this.timer) clearInterval(this.timer); this.timer = null; }
+  stopHeartbeat() {
+    if (this.timer) clearInterval(this.timer);
+    if (this.webTimer) clearInterval(this.webTimer);
+    this.timer = null; this.webTimer = null;
+  }
 
   setConnectionStatus(s) {
     if (s === this.connectionStatus) return;

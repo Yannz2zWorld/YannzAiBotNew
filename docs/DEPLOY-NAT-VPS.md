@@ -66,9 +66,6 @@ DASHBOARD_PUBLIC_URL=https://lisensi.apiz2z.web.id
 DASHBOARD_TRUST_PROXY=true
 SESSION_SECRET=...                        # openssl rand -hex 32
 BACKUP_ENCRYPTION_KEY=...                 # teks acak ≥ 16 karakter, simpan juga di tempat lain
-GOOGLE_CLIENT_ID=...
-GOOGLE_CLIENT_SECRET=...
-GOOGLE_CALLBACK_URL=https://lisensi.apiz2z.web.id/auth/google/callback
 
 LICENSE_SERVER_URL=http://127.0.0.1:8787  # bot & dashboard satu VPS
 OWNER_NUMBER=628xxxxxxxxxx
@@ -100,11 +97,7 @@ VPS tanpa Managed Domain: pakai Cloudflare Tunnel ke `localhost:8787` (lihat `de
 Buka `https://lisensi.apiz2z.web.id/` → masuk dengan **username/email + password** dari langkah 4.
 Buat akun pembeli di menu **Akun** (username + password + rank), lalu berikan username & password itu ke pembeli.
 
-Google login **opsional**. Kalau mau dipakai: Google Cloud Console → APIs & Services → Credentials → **Create OAuth client ID** → Web application.
-- Authorized JavaScript origins: `https://lisensi.apiz2z.web.id`
-- Authorized redirect URIs: `https://lisensi.apiz2z.web.id/auth/google/callback`
-
-Isi `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` di `.env`, lalu `pm2 restart yannajah-dashboard`.
+Tidak ada login Google — hanya username/email + password.
 Darurat (lupa password): `node server/cli.js set-password --username yann` di server, atau `login-link --username yann` (link sekali pakai 15 menit).
 
 ## 7. Daftarkan nomor bot & jalankan bot

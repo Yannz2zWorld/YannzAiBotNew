@@ -17,7 +17,7 @@ async function main() {
   }
   const app = createApp({ db, cfg });
   const server = app.listen(cfg.port, cfg.host, () => {
-    console.log(`YannAjahNew dashboard berjalan di ${cfg.publicUrl} (listen ${cfg.host}:${cfg.port})${cfg.googleEnabled ? '' : ' — Google OAuth belum dikonfigurasi'}`);
+    console.log(`YannAjahNew dashboard berjalan di ${cfg.publicUrl} (listen ${cfg.host}:${cfg.port})`);
   });
   // Graceful shutdown: berhenti menerima koneksi, selesaikan request, tutup pool database.
   let closing = false;

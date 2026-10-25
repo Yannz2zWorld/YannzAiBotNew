@@ -1,6 +1,6 @@
 'use strict';
 // Link login sekali pakai, HANYA dibuat lewat CLI di server (butuh akses shell = prosedur administratif).
-// Dipakai untuk bootstrap sebelum Google OAuth disetel atau akses darurat. Berlaku 15 menit, sekali pakai.
+// Dipakai untuk bootstrap (sebelum password diatur) atau akses darurat. Berlaku 15 menit, sekali pakai.
 
 const { sha256, newToken } = require('../lib/security');
 const audit = require('./auditService');

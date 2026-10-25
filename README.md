@@ -1,6 +1,6 @@
 # YannAjahNew
 
-Bot WhatsApp modular dengan namespace `yannajah`, autentikasi bot ke **backend pusat** (nomor bot + password bot), **website dashboard** dengan login username/email + password (Google opsional), **5 rank website** (RESELLER, SUKI, KING, CEO, DEVELOPER) dengan kuota nomor 10/50/100/1000/∞, ban/unban & maintenance yang tersinkron ke proses bot, serta integrasi **APIZ2Z** dari katalog endpoint yang terverifikasi. MEMBER bukan akun website — ia hanya pemakai bot yang nomornya didaftarkan reseller ke atas.
+Bot WhatsApp modular dengan namespace `yannajah`, autentikasi bot ke **backend pusat** (nomor bot + password bot), **website dashboard** dengan login **hanya username/email + password** (tanpa Google), **5 rank website** (RESELLER, SUKI, KING, CEO, DEVELOPER) dengan kuota nomor 10/50/100/1000/∞, ban/unban & maintenance yang tersinkron ke proses bot, serta integrasi **APIZ2Z** dari katalog endpoint yang terverifikasi. MEMBER bukan akun website — ia hanya pemakai bot yang nomornya didaftarkan reseller ke atas.
 
 Struktur file mengikuti Yann AI V15 / Lena AI (1 file = 1 command); fitur & perilaku mengikuti Yann AI V15 Fixed. Detail audit: [docs/AUDIT.md](docs/AUDIT.md).
 
@@ -39,7 +39,7 @@ node server/cli.js bootstrap-developer --username kamu --email kamu@gmail.com   
 node server/cli.js set-password --username kamu                   # password login website (tersembunyi)
 npm run dashboard                                                 # http://127.0.0.1:8787
 ```
-Masuk website dengan **username (atau email) + password** tadi. Google login opsional (kalau `GOOGLE_CLIENT_ID` diisi); link sekali pakai `node server/cli.js login-link --username kamu` tetap ada untuk darurat.
+Masuk website dengan **username (atau email) + password** tadi (tidak ada login Google); link sekali pakai `node server/cli.js login-link --username kamu` tetap ada untuk darurat.
 
 ### Alur jual script ke pembeli
 
@@ -53,7 +53,9 @@ Username & password **bebas** (tanpa syarat format/panjang; maks 72 byte). Keama
 
 ### 2. Daftarkan nomor bot & password
 
-Dashboard → **Bot**: reseller ke atas hanya *+ Tambah bot* (nama, nomor WhatsApp) dan *Hapus* nomor, sesuai kuota akun — **tanpa password**. **Password bot hanya DEVELOPER yang bisa membuat/mengganti** (tombol *Password*); tidak ada password otomatis, jadi bot belum bisa login sampai developer menetapkannya, lalu diberikan ke pembeli bersama script. Operasi bot lain (nyalakan/matikan, ganti nama, cabut sesi, ban, maintenance per bot) juga **hanya DEVELOPER**. Nomor, password, status, ban, dan maintenance bot disimpan di PostgreSQL pusat; bot tidak pernah menyimpan URL/password database (lihat [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)).
+Dashboard → **Bot**: reseller ke atas hanya *+ Tambah bot* (nama, nomor WhatsApp) dan *Hapus* nomor, sesuai kuota akun — **tanpa password**. **Password bot hanya DEVELOPER yang bisa membuat/mengganti** (tombol *Password*); tidak ada password otomatis, jadi bot belum bisa login sampai developer menetapkannya, lalu diberikan ke pembeli bersama script. Operasi bot lain (nyalakan/matikan, ganti nama, cabut sesi, ban, maintenance per bot) juga **hanya DEVELOPER**.
+
+**Maintenance web database** (menu *Maintenance*, hanya DEVELOPER): website tidak bisa diakses selain DEVELOPER (sesi lama ikut ditolak, login baru ditolak) **dan semua bot berhenti total** — tidak membalas apa pun, scheduler berhenti, bot yang baru dinyalakan menunggu — sampai maintenance web dimatikan. Bot mengecek ulang tiap 30 detik, jadi langsung jalan lagi setelah dimatikan. Urutan prioritas: maintenance web > maintenance per bot > maintenance global. Nomor, password, status, ban, dan maintenance bot disimpan di PostgreSQL pusat; bot tidak pernah menyimpan URL/password database (lihat [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)).
 
 Tanpa dashboard, lewat server (DEVELOPER/owner):
 ```bash

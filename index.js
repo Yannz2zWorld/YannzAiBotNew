@@ -92,6 +92,15 @@ async function authenticate(license, config, logger) {
   return false;
 }
 
+// Maintenance web database: bot "stuck" (tidak lanjut start) sampai Developer mematikannya.
+// LicenseClient mengecek ulang tiap 30 detik selama maintenance web aktif.
+async function waitWebMaintenance(license) {
+  if (license.maintenance().scope !== 'web') return;
+  console.log(chalk.yellow(`⏸ Web database sedang maintenance: ${license.maintenance().message}\n  Bot menunggu sampai maintenance dimatikan...`));
+  while (license.maintenance().scope === 'web' && license.isActive()) await sleep(5000);
+  if (license.isActive()) console.log(chalk.green('✔ Maintenance web selesai, bot lanjut berjalan.'));
+}
+
 async function choosePairingMethod(config) {
   if (process.argv.includes('--qr')) return 'qr';
   if (process.argv.includes('--pairing-code')) return 'pairing';
@@ -118,6 +127,8 @@ async function main() {
   // ---------------------------------------------------------------- lisensi pusat (wajib sebelum fitur aktif)
   const license = new LicenseClient(config.license, { logger: logger.child('auth'), rootDir: ROOT });
   if (!(await authenticate(license, config, logger))) process.exit(EXIT_DENIED);
+  await waitWebMaintenance(license);
+  if (!license.isActive()) { console.log(chalk.red(`✖ ${license.describe(license.lockReason)}`)); process.exit(EXIT_DENIED); }
 
   // ---------------------------------------------------------------- database lokal, API, plugin
   const store = new DataBase({ dir: path.resolve(ROOT, config.database.dir), file: config.database.file, logger });

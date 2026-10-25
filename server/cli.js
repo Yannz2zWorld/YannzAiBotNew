@@ -78,14 +78,14 @@ async function main() {
       }
       case 'bootstrap-developer': {
         const username = v.username(o.username);
-        const email = v.email(o.email, { optional: false });
+        const email = v.email(o.email);   // opsional (login web memakai username/email + password)
         await db.withTransaction(async tx => {
           await tx.query('LOCK TABLE accounts IN SHARE ROW EXCLUSIVE MODE');
           const exists = (await tx.query("SELECT count(*)::int AS n FROM accounts WHERE rank_code = 'DEVELOPER' AND deleted_at IS NULL"))[0].n;
           if (exists) fail('Sudah ada DEVELOPER. Pakai grant-developer untuk akun lain.');
           const id = Number((await tx.query("INSERT INTO accounts (username, display_name, email, rank_code) VALUES ($1,$2,$3,'DEVELOPER') RETURNING id", [username, String(o['display-name'] || username).slice(0, 80), email]))[0].id);
           await audit.write(tx, { actorType: 'cli', action: 'account.bootstrap_developer', targetType: 'account', targetId: id, details: { username } });
-          console.log(`✔ DEVELOPER ${username} dibuat (id ${id}). Login dengan Google memakai ${email}, atau: node server/cli.js login-link --username ${username}`);
+          console.log(`✔ DEVELOPER ${username} dibuat (id ${id}). Atur password web: node server/cli.js set-password --username ${username} (darurat: login-link --username ${username})`);
         });
         break;
       }

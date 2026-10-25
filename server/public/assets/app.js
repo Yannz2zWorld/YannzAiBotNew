@@ -39,6 +39,7 @@
     let json = {};
     try { json = await res.json(); } catch {}
     if (res.status === 401) { location.replace('/'); throw new Error('Sesi berakhir'); }
+    if (json.error === 'WEB_MAINTENANCE') { maintenanceScreen(json.message); throw new Error(json.message || 'Maintenance'); }
     if (!res.ok || json.success === false) { const e = new Error(json.message || `HTTP ${res.status}`); e.code = json.error; throw e; }
     return json;
   }
@@ -240,9 +241,25 @@
     return box;
   }
 
+  // Web database sedang maintenance (akun selain DEVELOPER): tampilkan layar penuh, tanpa menu.
+  function maintenanceScreen(message) {
+    $('nav').replaceChildren();
+    $('view').replaceChildren(el('section', { class: 'panel' }, el('h2', {}, 'Web database sedang maintenance'), el('p', {}, message || 'Coba lagi nanti.'),
+      el('button', { class: 'btn', type: 'button', onclick: () => location.reload() }, 'Coba lagi')));
+  }
+
   async function renderMaintenance(view) {
     const { maintenance: m } = await api('GET', '/api/dash/maintenance');
-    view.append(el('section', { class: 'panel' }, el('h2', {}, 'Maintenance global'),
+    view.append(el('section', { class: 'panel' }, el('h2', {}, 'Maintenance web database'),
+      el('p', {}, 'Status: ', m.web_enabled ? el('span', { class: 'badge bad' }, 'AKTIF') : el('span', { class: 'badge ok' }, 'mati'), ` · diubah ${fmt(m.web_updated_at)}`),
+      el('p', { class: 'muted' }, 'Saat aktif: hanya DEVELOPER yang bisa memakai website, dan SEMUA bot berhenti total (tidak membalas, jadwal berhenti) sampai dimatikan.'),
+      el('button', { class: 'btn ' + (m.web_enabled ? 'primary' : 'danger'), type: 'button', onclick: async () => {
+        const v = await ask('Maintenance web database', [
+          { name: 'enabled', label: 'Status', type: 'select', options: [{ value: 'true', label: 'Aktif' }, { value: 'false', label: 'Mati' }], value: String(!m.web_enabled) },
+          { name: 'message', label: 'Pesan untuk pengguna web', type: 'textarea', value: m.web_message, required: true }]);
+        if (v && await run(() => api('PUT', '/api/dash/maintenance/web', { enabled: v.enabled === 'true', message: v.message }), 'Maintenance web diperbarui')) { ME = await api('GET', '/api/dash/me'); banner(); show('maintenance'); }
+      } }, m.web_enabled ? 'Matikan' : 'Aktifkan')));
+    view.append(el('section', { class: 'panel' }, el('h2', {}, 'Maintenance global bot'),
       el('p', {}, 'Status: ', m.enabled ? el('span', { class: 'badge warn' }, 'AKTIF') : el('span', { class: 'badge ok' }, 'mati'), ` · diubah ${fmt(m.updated_at)}`),
       el('p', { class: 'muted' }, 'Pengecualian (bot milik rank ini tetap jalan): ', m.exempt_ranks.join(', ') || '—'),
       el('button', { class: 'btn primary', type: 'button', onclick: async () => {
@@ -281,7 +298,8 @@
 
   function banner() {
     const b = $('maintenance-banner');
-    if (ME.maintenance?.enabled) { b.textContent = `Maintenance global aktif: ${ME.maintenance.message}`; b.classList.remove('hidden'); }
+    if (ME.maintenance?.web_enabled) { b.textContent = `Maintenance WEB DATABASE aktif: ${ME.maintenance.web_message}`; b.classList.remove('hidden'); }
+    else if (ME.maintenance?.enabled) { b.textContent = `Maintenance global aktif: ${ME.maintenance.message}`; b.classList.remove('hidden'); }
     else b.classList.add('hidden');
   }
 

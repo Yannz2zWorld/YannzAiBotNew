@@ -34,6 +34,7 @@ module.exports = function dashboardApi({ db, cfg }) {
       if (!actor) throw unauthorized('AUTH_REQUIRED', 'Akun tidak ditemukan.');
       if (actor.status !== 'active') throw forbidden('ACCOUNT_RESTRICTED', 'Akun kamu sedang tidak aktif.');
       await passwords.assertWebAccess(db, actor);   // website khusus RESELLER ke atas (dicek tiap request)
+      await maintenance.assertWebOpen(db, actor);   // maintenance web: hanya DEVELOPER
       req.actor = actor;
       req.sessionToken = token;
       if (!['GET', 'HEAD'].includes(req.method)) {
@@ -105,6 +106,7 @@ module.exports = function dashboardApi({ db, cfg }) {
   // ---------------------------------------------------------------- maintenance, audit, keamanan, sistem
   r.get('/api/dash/maintenance', h(async () => ({ maintenance: await maintenance.get(db) })));
   r.put('/api/dash/maintenance', h(async req => ({ maintenance: await maintenance.setGlobal(db, req.actor, req.body || {}, ip(req)) })));
+  r.put('/api/dash/maintenance/web', h(async req => ({ maintenance: await maintenance.setWeb(db, req.actor, req.body || {}, ip(req)) })));
 
   r.get('/api/dash/audit', h(async req => {
     if (!req.actor.perms.has('audit.view') && !req.actor.perms.has('audit.view_all')) throw forbidden('PERMISSION_DENIED', 'Butuh permission audit.view.');

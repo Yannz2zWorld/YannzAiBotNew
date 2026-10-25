@@ -2,7 +2,7 @@
 
 ```
                          ┌──────────────────────────── server/ (backend pusat) ─────────────────────────────┐
-  Browser admin ──HTTPS──▶ routes/auth.js (username/email+password, Google, link CLI)    services/accessControl (rank+permission+cakupan)
+  Browser admin ──HTTPS──▶ routes/auth.js (username/email+password, link CLI)    services/accessControl (rank+permission+cakupan)
                           routes/dashboardApi.js (CSRF+Origin)  ──▶  services/account|bot|quota|maintenance|audit
                           routes/botApi.js (Bearer token bot)   ──▶  services/botAuthService (login/verify/heartbeat)
                                                                        │
@@ -45,7 +45,9 @@
 
 **Ban / disable / sesi dicabut di dashboard.** Transaksi: ubah status + cabut `bot_sessions` + audit → heartbeat bot berikutnya dapat `401 SESSION_REVOKED` → `license` membuang token dan memancarkan `locked` → `wa.stop()`; `handleClose` tidak reconnect selama lisensi terkunci → router tidak menjalankan fitur apa pun. Login ulang ditolak `BOT_BANNED` sampai di-unban. Bila server lisensi tidak terjangkau lebih lama dari `offlineGraceMinutes` (default 0) bot juga terkunci (tidak ada akses penuh secara default).
 
-**Maintenance.** Global maupun per bot hanya DEVELOPER. Bot tetap terhubung; non-owner dibalas pesan maintenance. Bot milik rank di `exempt_ranks` tidak terkena maintenance global.
+**Maintenance.** Tiga lapis, semuanya hanya DEVELOPER, prioritas web > bot > global.
+- *Web database* (`PUT /api/dash/maintenance/web`, migrasi 008): semua route dashboard & login menolak non-DEVELOPER dengan `503 WEB_MAINTENANCE`; state bot `maintenance.scope = 'web'` membuat router (`YannzAjah-cmd.js`) diam total, scheduler berhenti, `index.js` menunggu saat startup, dan `library/license.js` mengecek ulang tiap 30 detik sampai dimatikan.
+- *Per bot* & *global*: bot tetap terhubung; non-owner dibalas pesan maintenance. Bot milik rank di `exempt_ranks` tidak terkena maintenance global.
 
 **Satu session = satu proses.** Lokal: lock file di folder session (pid hidup → tolak). Pusat: lease `instance_id` — login proses lain ditolak `409 INSTANCE_ACTIVE` selama proses lama masih heartbeat (< 3 menit), kecuali `force` (proses lama otomatis terkunci). Nomor WhatsApp yang dipairing wajib sama dengan nomor bot di dashboard; jika berbeda session dilepas.
 
