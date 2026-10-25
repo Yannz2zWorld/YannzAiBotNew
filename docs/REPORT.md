@@ -19,8 +19,9 @@ Semua angka di bawah berasal dari run nyata di container pengembangan (Node 22.2
 | Klien APIZ2Z: hanya endpoint terverifikasi, Bearer header, allowlist host, anti-SSRF, timeout, retry terbatas, rate limit, cache, batas ukuran, parsing sesuai Content-Type | `apiz2z.test.js` |
 | Build distribusi + obfuscation (bot saja) | `tests/bot/dist.test.js`: dist dimuat & dijalankan dari foldernya sendiri |
 | `index.js` start nyata | dijalankan terhadap backend lokal: banner → login lisensi non-interaktif → 1.933 entri registry → percobaan koneksi WhatsApp → reconnect terbatas → shutdown rapi; restart kedua memakai token tersimpan tanpa password; file token mode 600 |
+| Fitur Lena AI yang tidak ada di V15: upscaler 2x/4x, igquote, yannedit, sticker.ly cari + kirim pack, reply style text/card, getfile (owner, tanpa secret), cektrx | `tests/bot/lena-features.test.js` (APIZ2Z lewat transport tiruan: parameter, endpoint cadangan, error kuota tanpa cadangan, daftar file tanpa `.env`/session/database) |
 
-**Total test: 795 lulus, 0 gagal, 0 dilewati** (`TEST_DATABASE_URL=… npm test`). Syntax check: 90/90 file.
+**Total test: 858 lulus, 0 gagal, 0 dilewati** (`TEST_DATABASE_URL=… npm test`). Syntax check: 741/741 file.
 
 ## 🟡 Sebagian selesai
 

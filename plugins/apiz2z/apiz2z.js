@@ -8,10 +8,10 @@
 //   - sisa teks mengisi parameter wajib yang belum terisi; >1 parameter wajib dipisah "|"
 //   - parameter file (upload): kirim/reply gambar/media -> di-upload sebagai body POST
 //   - avatar/username/guildName/memberCount otomatis diisi dari profil & grup kalau kosong
-// Respons dirender sesuai bentuk aslinya (library/apiz2z-render.js).
+// Respons dirender sesuai bentuk aslinya (library/apiz2z-render.js lewat lib/apiz2z-kit.js).
 
 const { loadCatalog } = require('../../library/apiz2z');
-const { render } = require('../../library/apiz2z-render');
+const { sendResult } = require('../../lib/apiz2z-kit');
 const { feature } = require('../../library/plugin-kit');
 const { UsageError } = require('../../library/errors');
 
@@ -139,15 +139,7 @@ function build(registry) {
           const result = md
             ? await ctx.api.post(ep.path, params, { buffer: await md.download(), mime: md.mime })
             : await ctx.api.get(ep.path, params);
-          const r = render(result, { category, title: ep.name });
-          let sent = false;
-          for (const f of r.files) {
-            try { await ctx.sendFile(f.buffer ? { buffer: f.buffer, mime: f.mime } : f.url, { caption: r.text ? r.text.slice(0, 1000) : '' }); sent = true; }
-            catch (e) { ctx.logger.warn('kirim media APIZ2Z gagal', { path: ep.path, code: e.code }); }
-          }
-          if (!sent && r.text) await ctx.reply(r.text);
-          else if (sent && r.text && r.text.length > 1000) await ctx.reply(r.text);
-          else if (!sent && !r.text) await ctx.reply('Respons kosong dari server API.');
+          await sendResult(ctx, result, { category, title: ep.name });
           await ctx.react('✅');
         }
       }));

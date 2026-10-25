@@ -100,14 +100,21 @@ Detail & cara menulis plugin: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 | | Jumlah |
 |---|---:|
-| Fitur unik yang berfungsi | **1103** (619 lokal + 484 APIZ2Z) |
+| Fitur unik yang berfungsi | **1115** (631 lokal + 484 APIZ2Z) |
 | Lulus uji otomatis | 740 (203 unit, 484 mock APIZ2Z, 53 ffmpeg/Jimp nyata) |
-| Implemented tanpa uji otomatis (butuh socket WhatsApp, dsb.) | 363 |
-| Butuh `APIZ2Z_API_KEY` | 484 |
-| Backlog V15 (`planned`, sebagian alias) | 529 |
+| Implemented tanpa uji otomatis (butuh socket WhatsApp, dsb.) | 375 |
+| Butuh `APIZ2Z_API_KEY` | 491 |
+| Backlog V15 (`planned`, sebagian alias) | 524 |
 | Dikecualikan kebijakan (`disabled`) | 217 |
 
 Fitur lokal V15 sudah dibangun bertahap (toko/list, owner/reseller/premium/sewa, grup/sider/warn/absen/ultah/streak/jadwal, fun/primbon/ekonomi, menu & font, maker quote sticker, image mirror/crop). Sisa backlog `planned` kebanyakan butuh endpoint APIZ2Z yang cocok. Yang `disabled` sengaja tidak dibuat (lihat [docs/FEATURES.md](docs/FEATURES.md)): NSFW, OSINT nomor, broadcast massal, panel Pterodactyl, obfuscator kode pihak ketiga. Tidak ada command kosong yang diklaim berfungsi.
+
+**Tambahan dari Lena AI** (ada di Lena, tidak ada di Yann AI V15), API utama APIZ2Z dengan endpoint APIZ2Z lain sebagai cadangan:
+`.upscaler [2x|4x]` / `.upscale2x` / `.upscale4x`, `.igquote` (ignote/igq), `.yannedit` (edit gambar AI, premium; di Lena `.lenaedit`),
+`.caristiker` + `.caristikerdown <nomor|url>` (sticker.ly; alias Lena `caristikerpack`/`stikerlypack`), `.setreplystyle text|card`,
+`.getfile` / `.getfiledest` / `.getfilehelp` (owner; `.env`, session & database lokal tidak pernah ikut), `.cektrx <id>` (status order).
+Sengaja tidak diambil: panel server (`8gb`, `suspend`, `startsrv`, SMTP notif), `.jpm2` (broadcast massal), `.fakeffduo` (sama seperti `.fakeml`: pemalsuan),
+gaya reply Lena v2–v5 (meniru kontak Meta AI / kartu order palsu), dan alias bermerek Lena (`lenai`, `lenadl`, `alipqc`, …) yang fiturnya sudah ada.
 
 ## Integrasi APIZ2Z
 

@@ -133,9 +133,17 @@ function createYannajah({ config, logger, store, license, api, registry, wa = nu
     return job;
   };
 
+  // Gaya balasan (.setreplystyle): 'text' = teks biasa, 'card' = teks + kartu link (nama bot, owner, thumbnail).
+  function styled(payload) {
+    const style = yannajah.database.settings()?.replyStyle;
+    if (style !== 'card' || typeof payload?.text !== 'string' || payload.contextInfo) return payload;
+    const link = config.links?.channel || config.links?.group || undefined;
+    return { ...payload, contextInfo: { mentionedJid: payload.mentions || [], externalAdReply: { title: config.bot.name, body: config.owner.name, thumbnailUrl: config.image?.reply || undefined, sourceUrl: link, mediaType: 1, renderLargerThumbnail: false } } };
+  }
+
   yannajah.reply = (m, content, opts = {}) => {
     const payload = typeof content === 'string' ? { text: content, mentions: [...String(content).matchAll(/@(\d{5,16})/g)].map(x => toJid(x[1])) } : content;
-    return yannajah.sendmessage(m.chat, payload, { quoted: m.raw, ...opts });
+    return yannajah.sendmessage(m.chat, styled(payload), { quoted: m.raw, ...opts });
   };
 
   yannajah.react = (m, emoji) => yannajah.sendmessage(m.chat, { react: { text: String(emoji || ''), key: m.key } }, { allowWhenLocked: true }).catch(() => null);

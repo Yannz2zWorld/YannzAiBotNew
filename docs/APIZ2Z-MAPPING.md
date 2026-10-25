@@ -376,7 +376,7 @@ Total: 484 command.
 | `/api/search/spotify-lirik` | .lirik | lyrics, lyric | search | title* | 1/1 mock |
 | `/api/search/spotify-lirik-v2` | .spotifylirik2 |  | search | title* | 1/1 mock |
 | `/api/search/spotify-v2` | .searchspotify2 |  | search | q* | 1/1 mock |
-| `/api/search/stickerly` | .stickersearch | caristicker | search | q* | 1/1 mock |
+| `/api/search/stickerly` | .stickersearch |  | search | q* | 1/1 mock |
 | `/api/search/stickerly-v2` | .stickerly2 |  | search | q* | 1/1 mock |
 | `/api/search/telestick` | .searchtelestick |  | search | q* | 1/1 mock |
 | `/api/search/tiktok` | .ttsearch | tiktoksearch | search | q* | 1/1 mock |
