@@ -67,7 +67,7 @@ const V15_ALIASES = {
   '/api/maker/brat': ['bratbiasa', 'bratt'], '/api/maker/brathd': ['bratbiasahd'], '/api/maker/bratanime': ['bratgura'], '/api/maker/iqc-pink': ['bratpink'],
   '/api/canvas/iqc': ['iphonequoted'], '/api/canvas/iqc-v2': ['iphonequoted2', 'iqc3'], '/api/canvas/qcwa': ['qc1'], '/api/canvas/quotly': ['qc2'],
   '/api/canvas/musiccard': ['cardmusik', 'musikcard'],
-  '/api/ai/image-gen': ['createimage', 'generateimage', 'imgai', 'gptimage', 'gptimg', 'freecreate'], '/api/ai/nano-banana': ['editai', 'editimg', 'aiedit', 'photoai'],
+  '/api/ai/image-gen': ['createimage', 'generateimage', 'imgai', 'gptimage', 'gptimg', 'freecreate'], '/api/ai/nano-banana': ['editai', 'editimg', 'aiedit', 'photoai', 'yannaiedit', 'yannedit'],
   '/api/tools/text-to-speech': ['aitts', 'text2speech'], '/api/primbon/ramalan-jodoh-bali': ['jodohbali'], '/api/primbon/nomorhoki': ['nomerhoki', 'nohoki'],
   '/api/primbon/artinama': ['arti-nama'], '/api/primbon/cocokpasangan': ['kecocokanpasangan', 'kecocokannama', 'namacocok', 'cocoknama'],
   '/api/primbon/ramaljodoh': ['ramalanjodoh', 'ramalancinta'], '/api/primbon/rezeki-hoki': ['hoki'], '/api/primbon/zodiac': ['ramalanzodiak'],
@@ -76,7 +76,8 @@ const V15_ALIASES = {
   '/api/tools/skiplink': ['shortlink-dl'], '/api/tools/tinyurl': ['shortlink2'], '/api/tools/countryinfo': ['infonegara'], '/api/image/sketch': ['sketsa', 'sketsa2'],
   '/api/maker/emojimix': ['mixemoji'], '/api/maker/emojitogif': ['emojigif'], '/api/games/tebak-karakter-ff': ['tebakff'], '/api/stalk/freefire': ['cekff'],
   '/api/random/anime-quote': ['qanime', 'animequotes', 'randomquotenime'], '/api/random/waifu': ['randomwaifu'], '/api/random/meme': ['randommeme'],
-  '/api/download/threads': ['threadsdown'], '/api/stalk/tiktok': ['stalktiktok'], '/api/download/spotify': ['spdown'], '/api/ai/chatgpt': ['gpt5plus', 'gptonline', 'duckai', 'yannai', 'yannaimd']
+  '/api/download/threads': ['threadsdown'], '/api/stalk/tiktok': ['stalktiktok'], '/api/download/spotify': ['spdown'], '/api/ai/chatgpt': ['gpt5plus', 'gptonline', 'duckai', 'yannai', 'yannaimd'],
+  '/api/download/aio': ['yannaidl', 'yanndl']
 };
 
 // Kata kategori di path yang dibuang saat membuat nama otomatis.
