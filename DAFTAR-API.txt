@@ -6,8 +6,9 @@ Dibuat otomatis dari kode bot (node tools/api-list.js). Total command yang memak
 1. APIZ2Z  (API UTAMA, PAKAI KEY)
    Alamat : https://apiz2z.web.id
    Key    : buat di https://apiz2z.web.id -> menu API key
-   Tempat : file .env di folder bot, baris:
-              APIZ2Z_API_KEY=isi_key_kamu
+   Tempat : settingsbot.js, baris:
+              global.apikeyapiz2z = "isi_key_kamu"
+            (atau file .env: APIZ2Z_API_KEY=isi_key_kamu, kalau diisi .env yang dipakai)
    Kalau kosong: bot tetap jalan, tapi command di bawah membalas "Fitur ini butuh API key APIZ2Z".
    Command yang memakai APIZ2Z (574), per kategori:
 

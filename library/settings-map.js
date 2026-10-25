@@ -1,7 +1,7 @@
 'use strict';
 // Mengubah global.* dari settingsbot.js (gaya Yann AI V15) menjadi konfigurasi yang dipakai bot.
 // settingsbot.js cukup berisi global.xxx; file ini yang menerjemahkannya. Nilai .env (kalau diisi)
-// menimpa nilai settingsbot.js, berguna untuk panel/VPS. API key APIZ2Z hanya dari .env.
+// menimpa nilai settingsbot.js, berguna untuk panel/VPS.
 
 const env = (name, fallback = undefined) => { const v = process.env[name]; return v === undefined || v === '' ? fallback : v; };
 const envInt = (name, fallback) => { const v = parseInt(env(name, ''), 10); return Number.isFinite(v) ? v : fallback; };
@@ -54,7 +54,7 @@ function settingsMap(g = global) {
     api: {
       apiz2z: {
         baseUrl: env('APIZ2Z_BASE_URL', 'https://apiz2z.web.id'),
-        apiKey: env('APIZ2Z_API_KEY', ''),
+        apiKey: env('APIZ2Z_API_KEY', g.apikeyapiz2z || ''),
         allowedHosts: envList('APIZ2Z_ALLOWED_HOSTS', ['apiz2z.web.id', 'cdn.apiz2z.web.id', 'apiz2z.vercel.app']),
         timeoutMs: envInt('APIZ2Z_TIMEOUT_MS', 60000),
         retries: envInt('APIZ2Z_RETRIES', 2),
@@ -89,7 +89,7 @@ function settingsMap(g = global) {
     mess: {
       cooldown: '⏱️ Tunggu {s} detik sebelum memakai command lagi.',
       disabled: '⛔ Fitur ini sedang dinonaktifkan.',
-      needApiKey: '🔑 Fitur ini butuh API key APIZ2Z. Owner perlu mengisi APIZ2Z_API_KEY di file .env.',
+      needApiKey: '🔑 Fitur ini butuh API key APIZ2Z. Owner perlu mengisi global.apikeyapiz2z di settingsbot.js.',
       unlicensed: '🔒 Bot belum terverifikasi oleh web database. Hubungi owner.',
       ...g.mess
     }

@@ -17,7 +17,7 @@ error merah; bot tersambung lagi sendiri (cek tiap 30 detik) setelah web databas
 1. Buka **Files** → upload `YannAjah-AI.zip` → klik kanan → **Unarchive**.
 2. Pindahkan isi folder `YannAjah-AI/` ke root (`/home/container`) kalau terekstrak di dalam folder.
 3. Buka `settingsbot.js`: ganti `global.owner`, `global.botname`, `global.custompairing`, dll. (lihat CARA-EDIT.txt).
-4. Ubah nama `.env.example` jadi `.env`, isi `APIZ2Z_API_KEY`.
+4. API key APIZ2Z sudah ada di `settingsbot.js` (`global.apikeyapiz2z`). File `.env` opsional.
 
 ## 3. Start pertama
 

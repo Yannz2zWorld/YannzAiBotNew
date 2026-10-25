@@ -24,7 +24,7 @@ YANNAJAH AI - CARA EDIT BOT
      global.image = { menu: 'link gambar menu', ... }
      global.mess = { owner: 'pesan khusus owner', ... }
    Password bot dan nomor bot TIDAK diatur di sini (diatur Developer di web database).
-   API key APIZ2Z diisi di file .env:  APIZ2Z_API_KEY=xxxxx
+   API key APIZ2Z: settingsbot.js -> global.apikeyapiz2z = 'key kamu'
 
 3. MEMBUAT COMMAND BARU (gaya Yann AI / Lena AI)
    Salin plugins/contoh/halo.js ke folder kategori, misalnya plugins/fun/sapa.js, lalu ubah:

@@ -83,8 +83,9 @@ global.api = {
     }
 }
 
-// API utama YannAjah = APIZ2Z, API key-nya diisi di file .env (APIZ2Z_API_KEY=...)
+// API utama YannAjah = APIZ2Z
 global.apiz2z = "https://apiz2z.web.id"
+global.apikeyapiz2z = "" // apikey APIZ2Z
 
 // apikey ambil di https://alipshop.clutch.web.id
 global.amPremApikey = ''

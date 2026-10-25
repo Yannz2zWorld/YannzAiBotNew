@@ -5,7 +5,7 @@
 //   release/YannAjah-WebDatabase/   website dashboard + API lisensi + migrasi PostgreSQL untuk VPS
 //                                   (pemasang otomatis install-vps.sh) + YannAjah-WebDatabase.zip
 //
-//   node tools/build-release.js --license-url https://lisensi.domainkamu.com [--no-obfuscate] [--no-zip]
+//   node tools/build-release.js --license-url https://lisensi.domainkamu.com [--apiz2z-key KEY] [--no-obfuscate] [--no-zip]
 //
 // Tidak pernah ikut: .env asli, session WhatsApp, database lokal bot, token lisensi, test, node_modules.
 
@@ -54,6 +54,16 @@ writeJson(path.join(BOT, 'package.json'), {
   optionalDependencies: { 'ffmpeg-static': '^5.2.0' }
 });
 fs.copyFileSync(path.join(ROOT, 'deploy', 'bot', '.env.example'), path.join(BOT, '.env.example'));
+// API key APIZ2Z untuk paket ini (tidak pernah disimpan di repo): --apiz2z-key <key> atau env BUILD_APIZ2Z_KEY.
+const apiKey = arg('--apiz2z-key') || process.env.BUILD_APIZ2Z_KEY || '';
+if (apiKey) {
+  if (!/^[\w.-]{4,200}$/.test(apiKey)) { console.error('--apiz2z-key tidak valid'); process.exit(1); }
+  const sf = path.join(BOT, 'settingsbot.js');
+  const src = fs.readFileSync(sf, 'utf8');
+  const out = src.replace(/global\.apikeyapiz2z = "[^"]*"/, `global.apikeyapiz2z = "${apiKey}"`);
+  if (out === src) { console.error('settingsbot.js tidak berisi global.apikeyapiz2z'); process.exit(1); }
+  fs.writeFileSync(sf, out);
+}
 for (const f of ['PANDUAN-PANEL.md', 'README.md']) fs.copyFileSync(path.join(ROOT, 'deploy', 'bot', f), path.join(BOT, f));
 fs.writeFileSync(path.join(BOT, '.gitignore'), 'node_modules\n.env\nsession/\nlibrary/database/*.json\n');
 
